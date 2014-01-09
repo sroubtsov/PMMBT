@@ -5,7 +5,6 @@
 package protocolmodelingmbt.parser;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -81,24 +80,11 @@ public class ParseModel {
         return transition.substring(transition.indexOf("*") + 1, transition.indexOf("="));
     }
 
-//    public static void traverse(TransitionNode root, String path) {
-//        path += root.getTransitionValues() + "-->";
-//        for (TransitionNode child : root.getChildren()) {
-//            traverse(child, path);
-//        }
-//
-//        // end of current traversal
-//        if (root.getChildren().isEmpty()) {
-//            System.out.println(path + "|");
-//        }
-//    }
 
     public Model parseModel(String filename) {
         String line;
-//        String path = "";
-//        ArrayList<String> transitions;
         ArrayList<String> modellines = readModel(filename);
-System.out.println(" size =" +modellines.size());
+//System.out.println(" size =" +modellines.size());
 
 //Contain the lines of current model element
         ArrayList<String> element = new ArrayList();
@@ -178,27 +164,6 @@ System.out.println(" size =" +modellines.size());
                 element.add(modellines.get(i));
                 //System.out.println(modellines.get(i));
             }
-
-
-//    transitions  = new ArrayList<String>();
-//    int i = 0;
-//
-//    while (i< model.size () 
-//        ) {
-//            line = model.get(i);
-//        line = line.replaceAll(Grammar.TRANSITIONS, "");
-//        if (line.contains("*")) {
-//            transitions.add(line);
-//        }
-//        i++;
-//    }
-//        for (i = 0; i < transitions.size(); i++) {
-//            String transition = transitions.get(i);
-//            if (beforeState(transition).equals("@new")) {
-//                TransitionNode root = new TransitionNode("@new", transition, transitions);
-//                traverse(root, path);
-//                break;
-//            }
         }
         createModelElement(parsestate, element); //For the last one! 
         return this.model;
