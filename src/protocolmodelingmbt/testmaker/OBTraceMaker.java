@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import protocolmodelingmbt.model.Behaviour;
 import protocolmodelingmbt.model.Model;
 import protocolmodelingmbt.model._Object;
+import protocolmodelingmbt.parser.ParseModel;
 import protocolmodelingmbt.parser.ParsingUtilities;
 import protocolmodelingmbt.parser.TransitionNode;
 
@@ -37,52 +38,96 @@ public class OBTraceMaker {
     }
 
     public static void makeModeltraces(Model model) {
-        ArrayList<Behaviour> objectsANDbehaviours = new ArrayList<>();
-        objectsANDbehaviours.addAll(model.objects);
-        objectsANDbehaviours.addAll(model.behaviours);
-        for (int i = 0; i < model.objects.size(); i++) {
-            if (ParsingUtilities.ifDisjointArrayLists(model.getEventNames(), objectsANDbehaviours.get(i).getBEEventNames())) {
-                System.out.println("Disjoint algrithm");
-                model.traces.addAll(objectsANDbehaviours.get(i).getTraces());
+        ArrayList<Behaviour> protocolMachines = new ArrayList<>();
+        protocolMachines.addAll(model.objects);
+        protocolMachines.addAll(model.behaviours);
+        for (int i = 0; i < protocolMachines.size(); i++) {
+            if (ParsingUtilities.ifDisjointArrayLists(model.getEventNames(), protocolMachines.get(i).getBEEventNames())) {
+                System.out.println("Disjoint algrithm for " + protocolMachines.get(i).getModelElementName());
+                model.traces.addAll(protocolMachines.get(i).getTraces());
             } else {
-                model.traces.addAll(objectsANDbehaviours.get(i).getTraces());
                 System.out.println("Woven algrithm");
-                weaveTracesWith(model, objectsANDbehaviours.get(i));
-                //model.traces.addAll(objectsANDbehaviours.get(i).getTraces());
+                weaveTracesWith(model, protocolMachines.get(i));
+                //               model.traces.addAll(protocolMachines.get(i).getTraces());
             }
-            model.getEventNames().addAll(ParsingUtilities.getUniqueArrayListElements(model.getEventNames(), objectsANDbehaviours.get(i).getBEEventNames()));
+            model.getEventNames().addAll(ParsingUtilities.getUniqueArrayListElements(model.getEventNames(), protocolMachines.get(i).getBEEventNames()));
         }
     }
 
     private static void weaveTracesWith(Model model, Behaviour objectORbehaviour) {
-        int mt = 0;
         String[] otransitions = null;
         String[] mtransitions = null;
-
+        String A = null;
+        String B = null;
+        int mt = 0;
         for (String mtrace : model.traces) {
             mtransitions = splitTrace(mtrace);
+//            for (int k = 0; k < mtransitions.length; k++) {
+//                System.out.println(mtransitions[k]);
+//            }
+
+            int ot = 0;
+            for (String otrace : objectORbehaviour.getTraces()) {
+                otransitions = splitTrace(otrace);
+//                for (int k = 0; k < otransitions.length; k++) {
+//                    System.out.println(otransitions[k]);
+//                }
+                do {
+                    A = ParseModel.getEvent(mtransitions[mt]);
+                    B = ParseModel.getEvent(otransitions[ot]);
+
+                    if (A.equals(B)) { //A = B
+                        doStatesConcat(ParseModel.beforeState(mtransitions[mt]), ParseModel.beforeState(otransitions[ot]));
+                        doStatesConcat(ParseModel.afterState(mtransitions[mt]), ParseModel.afterState(otransitions[ot]));
+
+                        System.out.println("A = B");
+
+                        mt++;
+                        ot++;
+                    } else {//A != B
+                        System.out.println("A != B");
+                        
+                        if (!ParsingUtilities.getDuplicateArrayListElements(model.getEventNames(), objectORbehaviour.getBEEventNames()).contains(A)) {//A is NOT there
+                            
+                            System.out.println("A is NOT there");
+                            
+                            if (ParsingUtilities.getDuplicateArrayListElements(model.getEventNames(), objectORbehaviour.getBEEventNames()).contains(B)) { //B is there
+                                doStatesConcat(ParseModel.beforeState(mtransitions[mt]), ParseModel.beforeState(otransitions[ot]));
+                                doStatesConcat(ParseModel.afterState(mtransitions[mt]), ParseModel.beforeState(otransitions[ot]));
+                                mt++;
+                            }
+                        } else {//A IS there
+                            
+                            System.out.println("A IS there");
+
+                            if (ParsingUtilities.getDuplicateArrayListElements(model.getEventNames(), objectORbehaviour.getBEEventNames()).contains(B)) { //B is there
+                                System.out.println("Deadlock"); //deadlock
+                                break;
+                            } else {//B is NOT there
+                                System.out.println("B IS there");
+                                doTrReplace(mtransitions[mt], otransitions[ot]);
+                                ot++;
+                            }
+                        }
+                    }
+                } while (mt < mtransitions.length);
+            }
         }
-        int ot = 0;
-
-        for (String otrace : objectORbehaviour.getTraces()) {
-            otransitions = splitTrace(otrace);
-        }
-
-        do {
-            System.out.println(mtransitions[mt] + "@@@@" + otransitions[ot]);
-            ot++;
-            mt++;
-        } while (mt > mtransitions.length);
-
-
 
     }
 
     private static String[] splitTrace(String trace) {
-        String trace2parse = "";
-        trace2parse.concat(trace);
-        trace2parse = trace2parse.replace("-->", "@");
-        return trace2parse.split("@");
+        if (trace.contains("-->")) {
+            trace = trace.replace("-->", ">");
+            trace = trace.replace(">|", ""); //Termination is not a transiton
+
+            return trace.split(">");
+        } else {
+            String[] oneTransactionOnly = new String[1];
+            oneTransactionOnly[0] = trace;
+            return oneTransactionOnly;
+        }
+
     }
 
     private static void traverse(TransitionNode root, Behaviour behaviour, String path) {
@@ -99,5 +144,13 @@ public class OBTraceMaker {
             //       System.out.println("path " + path);
         }
 //        return path;
+    }
+
+    private static void doStatesConcat(String state1, String State2) {
+        System.out.println("doStatesConcat: Not supported yet.");
+    }
+
+    private static void doTrReplace(String transitionBefore, String transitioonAfter) {
+        System.out.println("doTrReplace: Not supported yet.");
     }
 }

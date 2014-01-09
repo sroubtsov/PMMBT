@@ -29,8 +29,8 @@ public class ProtocolModelingMBT {
         ParseModel parsemodel = new ParseModel();
         Model model = parsemodel.parseModel(args[0]);
         
-        model.writeModel("");
-        model.writeModel(args[1]);
+ //       model.writeModel("");
+//        model.writeModel(args[1]);
         
         for(_Object ob: model.objects){
             OBTraceMaker.makeOBtraces(ob);

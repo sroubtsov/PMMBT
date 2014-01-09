@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import protocolmodelingmbt.model.Attribute;
 import protocolmodelingmbt.model.Behaviour;
+import protocolmodelingmbt.model.Callback;
 import protocolmodelingmbt.model.Event;
 import protocolmodelingmbt.model.Generic;
 import protocolmodelingmbt.model.Model;
@@ -80,7 +81,6 @@ public class ParseModel {
         return transition.substring(transition.indexOf("*") + 1, transition.indexOf("="));
     }
 
-
     public Model parseModel(String filename) {
         String line;
         ArrayList<String> modellines = readModel(filename);
@@ -107,7 +107,7 @@ public class ParseModel {
                     || modellines.get(i).startsWith(Grammar.ACTOR)
                     || modellines.get(i).startsWith(Grammar.CALLBACK)) {
 
-                if (modellines.get(i).startsWith(Grammar.EVENT)) {                   
+                if (modellines.get(i).startsWith(Grammar.EVENT)) {
                     createModelElement(parsestate, element); //For the previous state!
                     element = new ArrayList();
                     System.out.println("------  event --------");
@@ -120,7 +120,7 @@ public class ParseModel {
                 } else if (modellines.get(i).startsWith(Grammar.BEHAVIOUR)) {
                     createModelElement(parsestate, element);
                     element = new ArrayList();
-                   System.out.println("-------- behaviour ------");
+                    System.out.println("-------- behaviour ------");
                     parsestate = PARSESTATE.behaviour;
                 } else if (modellines.get(i).startsWith(Grammar.OBJECT)) {
                     createModelElement(parsestate, element);
@@ -136,10 +136,10 @@ public class ParseModel {
                 } else if (modellines.get(i).startsWith(Grammar.CALLBACK)) {
                     createModelElement(parsestate, element);
                     //TODO
-                   element = new ArrayList();
-                   System.out.println("------- callback -------");
+                    element = new ArrayList();
+                    System.out.println("------- callback -------");
                     parsestate = PARSESTATE.callback;
-                } 
+                }
             }
 
 //parse model element at the current parsing state
@@ -319,8 +319,7 @@ public class ParseModel {
 
     private void createGeneric(ArrayList<String> ge) {
         String currentline;
-        System.out.println("in generic" );
-        Generic generic = new Generic(ParsingUtilities.parseMSname(Grammar.GENERIC, ge.get(0)),new ArrayList<String>());
+        Generic generic = new Generic(ParsingUtilities.parseMSname(Grammar.GENERIC, ge.get(0)), new ArrayList<String>());
         generic.setModelElementName(ge.get(0));
 
         parsestate = PARSESTATE.generic;
@@ -343,11 +342,21 @@ public class ParseModel {
         System.out.println("... creating generic ");
         generic.writeGeneric();
     }
-    
-    
-    
+
+    private void createCB(ArrayList<String> cb) {
+        String currentline;
+        Callback callback = new Callback(cb); //SR for the time being. TODO: 1 - remove CALLBACK line; 
+        //2 - parse public class ... for the name of the corresponding object; 
+        //3 - store it to the object as well
+        this.model.callbacks.add(callback);
+        System.out.println("... creating callback ");
+//        callback.writeCallback();
+
+
+    }
+
     private void createModelElement(PARSESTATE parsestate, ArrayList<String> element) {
-        System.out.println("-->" +  parsestate);
+        System.out.println("-->" + parsestate);
         if (parsestate == PARSESTATE.actor) {
             //TODO
         } else if (parsestate == PARSESTATE.generic) {
@@ -360,7 +369,7 @@ public class ParseModel {
         } else if (parsestate == PARSESTATE.object) {
             createOB(element);
         } else if (parsestate == PARSESTATE.callback) {
-            //TODO
+            createCB(element);
         }
 
     }

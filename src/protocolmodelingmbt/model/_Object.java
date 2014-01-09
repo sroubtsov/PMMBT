@@ -11,11 +11,14 @@ public class _Object extends Behaviour {
 
     private String name;
     private ArrayList<String> includes;
+    private ArrayList<String> callbacks;
 
     public _Object(String name) {
         super(new ArrayList<Attribute>(), new ArrayList<State>(), new ArrayList<Transition>());
         this.name = name;
         this.includes = new ArrayList<String>();
+        this.callbacks = new ArrayList<String>();
+        
     }
 
     public _Object(String name, ArrayList<Attribute> attributes, ArrayList<State> states, ArrayList<Transition> transitions) {
