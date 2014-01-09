@@ -62,16 +62,16 @@ public class OBTraceMaker {
         int mt = 0;
         for (String mtrace : model.traces) {
             mtransitions = splitTrace(mtrace);
-//            for (int k = 0; k < mtransitions.length; k++) {
-//                System.out.println(mtransitions[k]);
-//            }
+            for (int k = 0; k < mtransitions.length; k++) {
+                System.out.println(mtransitions[k]);
+            }
 
             int ot = 0;
             for (String otrace : objectORbehaviour.getTraces()) {
                 otransitions = splitTrace(otrace);
-//                for (int k = 0; k < otransitions.length; k++) {
-//                    System.out.println(otransitions[k]);
-//                }
+                for (int k = 0; k < otransitions.length; k++) {
+                    System.out.println(otransitions[k]);
+                }
                 do {
                     A = ParseModel.getEvent(mtransitions[mt]);
                     B = ParseModel.getEvent(otransitions[ot]);
@@ -86,18 +86,18 @@ public class OBTraceMaker {
                         ot++;
                     } else {//A != B
                         System.out.println("A != B");
-                        
+
                         if (!ParsingUtilities.getDuplicateArrayListElements(model.getEventNames(), objectORbehaviour.getBEEventNames()).contains(A)) {//A is NOT there
-                            
+
                             System.out.println("A is NOT there");
-                            
+
                             if (ParsingUtilities.getDuplicateArrayListElements(model.getEventNames(), objectORbehaviour.getBEEventNames()).contains(B)) { //B is there
                                 doStatesConcat(ParseModel.beforeState(mtransitions[mt]), ParseModel.beforeState(otransitions[ot]));
                                 doStatesConcat(ParseModel.afterState(mtransitions[mt]), ParseModel.beforeState(otransitions[ot]));
                                 mt++;
                             }
                         } else {//A IS there
-                            
+
                             System.out.println("A IS there");
 
                             if (ParsingUtilities.getDuplicateArrayListElements(model.getEventNames(), objectORbehaviour.getBEEventNames()).contains(B)) { //B is there
@@ -111,9 +111,12 @@ public class OBTraceMaker {
                         }
                     }
                 } while (mt < mtransitions.length);
+                if (ot <= otransitions.length) {
+                    //TODO Conactenate mtransitions with the rest of otransitions
+                }
             }
         }
-
+//TODO Put modified mtransitions back into model.traces
     }
 
     private static String[] splitTrace(String trace) {
