@@ -99,7 +99,7 @@ public class OBTraceMaker {
                                 System.out.println("Deadlock"); //deadlock                          
                                 break;
                             } else {//B is NOT there
-                                System.out.println("B IS in Es and Ei");
+                                System.out.println("B IS NOT in Es and Ei");
                                 mtransitions[mt] = doTrReplace(mtransitions[mt], otransitions[ot]);
                                 ot++;
                             }
@@ -109,12 +109,12 @@ public class OBTraceMaker {
                 mtrace = glueTrace(mtransitions);
 
 //                System.out.println("glued: " + mtrace);
-                if (ot < otransitions.length) {
-                    //TConactenate mtrasitions with the rest of otranstions;
-                    otrace = glueTrace(otransitions);
-                    mtrace = mtrace.replaceAll("|", "") /*it's not the termination yet*/ + glueTrace(otransitions); 
-                    System.out.println("with tail: " + mtrace);
-                }
+//                if (ot < otransitions.length) {
+//                    //TConactenate mtrasitions with the rest of otranstions;
+//                    otrace = glueTrace(otransitions);
+//                    mtrace = mtrace.replaceAll("|", "") /*it's not the termination yet*/ + glueTrace(otransitions); 
+//                    System.out.println("with tail: " + mtrace);
+//                }
                 model.traces.set(modelTraceIndex, mtrace);
 
             }
