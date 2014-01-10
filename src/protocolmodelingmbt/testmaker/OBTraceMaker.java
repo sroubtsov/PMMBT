@@ -108,11 +108,11 @@ public class OBTraceMaker {
                 } while ((mt < mtransitions.length) && (ot < otransitions.length));
                 mtrace = glueTrace(mtransitions);
 
-                System.out.println("glued: " + mtrace);
+//                System.out.println("glued: " + mtrace);
                 if (ot < otransitions.length) {
                     //TConactenate mtrasitions with the rest of otranstions;
                     otrace = glueTrace(otransitions);
-                    mtrace = mtrace.replaceAll("|", "") + glueTrace(otransitions);
+                    mtrace = mtrace.replaceAll("|", "") /*it's not the termination yet*/ + glueTrace(otransitions); 
                     System.out.println("with tail: " + mtrace);
                 }
                 model.traces.set(modelTraceIndex, mtrace);
@@ -157,7 +157,6 @@ public class OBTraceMaker {
             behaviour.getTraces().add(path);
             //       System.out.println("path " + path);
         }
-//        return path;
     }
 
     private static String doBeforeStateConcat(String mtransition, String state) {
@@ -177,6 +176,14 @@ public class OBTraceMaker {
     }
 
     private static String doTrReplace(String mtransition, String otransition) {
-        return ParseModel.beforeState(mtransition) + "&" + ParseModel.beforeState(otransition) + "*" + ParseModel.getEvent(otransition) + "=" + ParseModel.beforeState(mtransition) + "&" + ParseModel.afterState(otransition);
+        String newmtransition = "";        
+        //to make sure that the state is notin before states already
+        newmtransition = doBeforeStateConcat(mtransition, ParseModel.beforeState(otransition)); 
+        //change event
+        newmtransition = ParseModel.beforeState(newmtransition) + "*" + ParseModel.getEvent(otransition) + "=" + ParseModel.beforeState(mtransition);
+         //to make sure that the state is not in after states already
+        newmtransition = doAfterStateConcat(newmtransition,ParseModel.afterState(otransition));
+        
+        return newmtransition;
     }
 }

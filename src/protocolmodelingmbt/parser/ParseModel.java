@@ -110,33 +110,33 @@ public class ParseModel {
                 if (modellines.get(i).startsWith(Grammar.EVENT)) {
                     createModelElement(parsestate, element); //For the previous state!
                     element = new ArrayList();
-                    System.out.println("------  event --------");
+//                    System.out.println("------  event --------");
                     parsestate = PARSESTATE.event;
                 } else if (modellines.get(i).startsWith(Grammar.GENERIC)) {
                     createModelElement(parsestate, element);
                     element = new ArrayList();
-                    System.out.println("------ generic --------");
+ //                   System.out.println("------ generic --------");
                     parsestate = PARSESTATE.generic;
                 } else if (modellines.get(i).startsWith(Grammar.BEHAVIOUR)) {
                     createModelElement(parsestate, element);
                     element = new ArrayList();
-                    System.out.println("-------- behaviour ------");
+//                    System.out.println("-------- behaviour ------");
                     parsestate = PARSESTATE.behaviour;
                 } else if (modellines.get(i).startsWith(Grammar.OBJECT)) {
                     createModelElement(parsestate, element);
                     element = new ArrayList();
-                    System.out.println("------- object -------");
+ //                   System.out.println("------- object -------");
                     parsestate = PARSESTATE.object;
                 } else if (modellines.get(i).startsWith(Grammar.ACTOR)) {
                     //TODO
                     createModelElement(parsestate, element);
                     element = new ArrayList();
-                    System.out.println("------- actor -------");
+//                    System.out.println("------- actor -------");
                     parsestate = PARSESTATE.actor;
                 } else if (modellines.get(i).startsWith(Grammar.CALLBACK)) {
                     createModelElement(parsestate, element);
                     //TODO
-                    element = new ArrayList();
+//                    element = new ArrayList();
                     System.out.println("------- callback -------");
                     parsestate = PARSESTATE.callback;
                 }
@@ -197,7 +197,7 @@ public class ParseModel {
         }
         this.model.events.add(event);
         System.out.println("... creating event " + event.getAction());
-        event.writeEvent();
+//        event.writeEvent();
     }
 
     private void createOB(ArrayList<String> ob) {
@@ -261,7 +261,7 @@ public class ParseModel {
         }
         this.model.objects.add(object);
         System.out.println("... creating object " + object.getName());
-        object.writeObject();
+//        object.writeObject();
     }
 
     private void createBE(ArrayList<String> be) {
@@ -314,7 +314,7 @@ public class ParseModel {
         }
         this.model.behaviours.add(behaviour);
         System.out.println("... creating behaviour " + behaviour.getModelElementName());
-        behaviour.writeBehaviour();
+ //       behaviour.writeBehaviour();
     }
 
     private void createGeneric(ArrayList<String> ge) {
@@ -340,7 +340,7 @@ public class ParseModel {
         }
         this.model.generics.add(generic);
         System.out.println("... creating generic ");
-        generic.writeGeneric();
+//        generic.writeGeneric();
     }
 
     private void createCB(ArrayList<String> cb) {
@@ -360,7 +360,6 @@ public class ParseModel {
         if (parsestate == PARSESTATE.actor) {
             //TODO
         } else if (parsestate == PARSESTATE.generic) {
-            System.out.println("... creating generic ");
             createGeneric(element);
         } else if (parsestate == PARSESTATE.event) {
             createEvent(element);
