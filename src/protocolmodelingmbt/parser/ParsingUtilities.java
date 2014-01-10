@@ -43,6 +43,14 @@ public class ParsingUtilities {
         return liststring;
     }
 
+    public static String StringArray2Str(String[] strarr){
+        String arraystring = "";
+        for(int i = 0; i < strarr.length; i++){
+            arraystring.concat(strarr[i]);
+        }
+        return arraystring;
+    }
+    
     public static boolean existsInTypes(String test) {
 
         for (Types c : Types.values()) {

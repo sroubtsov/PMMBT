@@ -59,64 +59,67 @@ public class OBTraceMaker {
         String[] mtransitions = null;
         String A = null;
         String B = null;
-        int mt = 0;
-        for (String mtrace : model.traces) {
-            mtransitions = splitTrace(mtrace);
-            for (int k = 0; k < mtransitions.length; k++) {
-                System.out.println(mtransitions[k]);
-            }
 
-            int ot = 0;
-            for (String otrace : objectORbehaviour.getTraces()) {
+
+        for (String mtrace : model.traces) {//For each model trace
+            int modelTraceIndex = model.traces.indexOf(mtrace);
+            mtransitions = splitTrace(mtrace);
+//            for (int k = 0; k < mtransitions.length; k++) {
+//                System.out.println(mtransitions[k]);
+//            }
+            for (String otrace : objectORbehaviour.getTraces()) {//for each object trace
                 otransitions = splitTrace(otrace);
-                for (int k = 0; k < otransitions.length; k++) {
-                    System.out.println(otransitions[k]);
-                }
-                do {
+//                for (int k = 0; k < otransitions.length; k++) {
+//                    System.out.println(otransitions[k]);
+//                }
+                int mt = 0;
+                int ot = 0;
+                do { //do weawing
                     A = ParseModel.getEvent(mtransitions[mt]);
                     B = ParseModel.getEvent(otransitions[ot]);
 
                     if (A.equals(B)) { //A = B
-                        doStatesConcat(ParseModel.beforeState(mtransitions[mt]), ParseModel.beforeState(otransitions[ot]));
-                        doStatesConcat(ParseModel.afterState(mtransitions[mt]), ParseModel.afterState(otransitions[ot]));
-
+                        mtransitions[mt] = doBeforeStateConcat(mtransitions[mt], ParseModel.beforeState(otransitions[ot]));
+                        mtransitions[mt] = doAfterStateConcat(mtransitions[mt], ParseModel.afterState(otransitions[ot]));
                         System.out.println("A = B");
-
                         mt++;
                         ot++;
                     } else {//A != B
                         System.out.println("A != B");
-
                         if (!ParsingUtilities.getDuplicateArrayListElements(model.getEventNames(), objectORbehaviour.getBEEventNames()).contains(A)) {//A is NOT there
-
-                            System.out.println("A is NOT there");
-
+                            System.out.println("A is NOT in Es and Ei");
                             if (ParsingUtilities.getDuplicateArrayListElements(model.getEventNames(), objectORbehaviour.getBEEventNames()).contains(B)) { //B is there
-                                doStatesConcat(ParseModel.beforeState(mtransitions[mt]), ParseModel.beforeState(otransitions[ot]));
-                                doStatesConcat(ParseModel.afterState(mtransitions[mt]), ParseModel.beforeState(otransitions[ot]));
+                                mtransitions[mt] = doBeforeStateConcat(mtransitions[mt], ParseModel.beforeState(otransitions[ot]));
+                                mtransitions[mt] = doAfterStateConcat(mtransitions[mt], ParseModel.beforeState(otransitions[ot]));
                                 mt++;
                             }
                         } else {//A IS there
-
-                            System.out.println("A IS there");
-
+                            System.out.println("A IS  in Es and Ei");
                             if (ParsingUtilities.getDuplicateArrayListElements(model.getEventNames(), objectORbehaviour.getBEEventNames()).contains(B)) { //B is there
-                                System.out.println("Deadlock"); //deadlock
+                                System.out.println("Deadlock"); //deadlock                          
                                 break;
                             } else {//B is NOT there
-                                System.out.println("B IS there");
-                                doTrReplace(mtransitions[mt], otransitions[ot]);
+                                System.out.println("B IS in Es and Ei");
+                                mtransitions[mt] = doTrReplace(mtransitions[mt], otransitions[ot]);
                                 ot++;
                             }
                         }
                     }
-                } while (mt < mtransitions.length);
-                if (ot <= otransitions.length) {
-                    //TODO Conactenate mtransitions with the rest of otransitions
+                } while ((mt < mtransitions.length) && (ot < otransitions.length));
+                mtrace = glueTrace(mtransitions);
+
+                System.out.println("glued: " + mtrace);
+                if (ot < otransitions.length) {
+                    //TConactenate mtrasitions with the rest of otranstions;
+                    otrace = glueTrace(otransitions);
+                    mtrace = mtrace.replaceAll("|", "") + glueTrace(otransitions);
+                    System.out.println("with tail: " + mtrace);
                 }
+                model.traces.set(modelTraceIndex, mtrace);
+
             }
         }
-//TODO Put modified mtransitions back into model.traces
+
     }
 
     private static String[] splitTrace(String trace) {
@@ -131,6 +134,14 @@ public class OBTraceMaker {
             return oneTransactionOnly;
         }
 
+    }
+
+    private static String glueTrace(String[] transitions) {
+        String trace = "";
+        for (int i = 0; i < transitions.length; i++) {
+            trace = trace + transitions[i] + "-->";
+        }
+        return trace + "|";
     }
 
     private static void traverse(TransitionNode root, Behaviour behaviour, String path) {
@@ -149,11 +160,23 @@ public class OBTraceMaker {
 //        return path;
     }
 
-    private static void doStatesConcat(String state1, String State2) {
-        System.out.println("doStatesConcat: Not supported yet.");
+    private static String doBeforeStateConcat(String mtransition, String state) {
+        if (!ParseModel.beforeState(mtransition).contains(state)) {
+            return ParseModel.beforeState(mtransition) + "&" + state + "*" + ParseModel.getEvent(mtransition) + "=" + ParseModel.afterState(mtransition);
+        } else {
+            return mtransition;
+        }
     }
 
-    private static void doTrReplace(String transitionBefore, String transitioonAfter) {
-        System.out.println("doTrReplace: Not supported yet.");
+    private static String doAfterStateConcat(String mtransition, String state) {
+        if (!ParseModel.afterState(mtransition).contains(state)) {
+            return ParseModel.beforeState(mtransition) + "*" + ParseModel.getEvent(mtransition) + "=" + ParseModel.afterState(mtransition) + "&" + state;
+        } else {
+            return mtransition;
+        }
+    }
+
+    private static String doTrReplace(String mtransition, String otransition) {
+        return ParseModel.beforeState(mtransition) + "&" + ParseModel.beforeState(otransition) + "*" + ParseModel.getEvent(otransition) + "=" + ParseModel.beforeState(mtransition) + "&" + ParseModel.afterState(otransition);
     }
 }
