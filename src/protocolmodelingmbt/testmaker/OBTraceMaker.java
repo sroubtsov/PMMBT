@@ -77,30 +77,34 @@ public class OBTraceMaker {
                 do { //do weawing
                     A = ParseModel.getEvent(mtransitions[mt]);
                     B = ParseModel.getEvent(otransitions[ot]);
-
+System.out.println("A: " + A + " B: " + B);
                     if (A.equals(B)) { //A = B
                         mtransitions[mt] = doBeforeStateConcat(mtransitions[mt], ParseModel.beforeState(otransitions[ot]));
                         mtransitions[mt] = doAfterStateConcat(mtransitions[mt], ParseModel.afterState(otransitions[ot]));
+                        System.out.println("woven transition: " + mtransitions[mt]);
                         System.out.println("A = B");
                         mt++;
                         ot++;
                     } else {//A != B
                         System.out.println("A != B");
                         if (!ParsingUtilities.getDuplicateArrayListElements(model.getEventNames(), objectORbehaviour.getBEEventNames()).contains(A)) {//A is NOT there
-                            System.out.println("A is NOT in Es and Ei");
+                            System.out.println(A + " is NOT in Es and Ei");
                             if (ParsingUtilities.getDuplicateArrayListElements(model.getEventNames(), objectORbehaviour.getBEEventNames()).contains(B)) { //B is there
+                                System.out.println(B + " IS in Es and Ei");
                                 mtransitions[mt] = doBeforeStateConcat(mtransitions[mt], ParseModel.beforeState(otransitions[ot]));
                                 mtransitions[mt] = doAfterStateConcat(mtransitions[mt], ParseModel.beforeState(otransitions[ot]));
+                                System.out.println("woven transition: " + mtransitions[mt]);
                                 mt++;
                             }
                         } else {//A IS there
-                            System.out.println("A IS  in Es and Ei");
+                            System.out.println(A + " IS  in Es and Ei");
                             if (ParsingUtilities.getDuplicateArrayListElements(model.getEventNames(), objectORbehaviour.getBEEventNames()).contains(B)) { //B is there
                                 System.out.println("Deadlock"); //deadlock                          
                                 break;
                             } else {//B is NOT there
-                                System.out.println("B IS NOT in Es and Ei");
+                                System.out.println(B +"IS NOT in Es and Ei");
                                 mtransitions[mt] = doTrReplace(mtransitions[mt], otransitions[ot]);
+                                System.out.println("woven transition: " + mtransitions[mt]);
                                 ot++;
                             }
                         }
