@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import protocolmodelingmbt.model.Behaviour;
 import protocolmodelingmbt.model.Model;
 import protocolmodelingmbt.model._Object;
+import protocolmodelingmbt.parser.Grammar;
 import protocolmodelingmbt.parser.ParseModel;
 import protocolmodelingmbt.parser.ParsingUtilities;
 import protocolmodelingmbt.parser.TransitionNode;
@@ -31,7 +32,14 @@ public class OBTraceMaker {
     public static void makeBEtraces(Behaviour behaviour) {
         String transition = "";
         for (int i = 0; i < behaviour.getTransitions().size(); i++) {
-            transition = behaviour.getTransitions().get(i).getTransitionStr();
+            transition = ParsingUtilities.parseMSname(Grammar.BEHAVIOUR,behaviour.getModelElementName()) + "." 
+                    + behaviour.getTransitions().get(i).getBeforeState().getState() + "*" +
+                    behaviour.getTransitions().get(i).getAction().getAction() + "=" +
+                    ParsingUtilities.parseMSname(Grammar.BEHAVIOUR,behaviour.getModelElementName()) + "." 
+                    + behaviour.getTransitions().get(i).getAfterState().getState();
+                    
+                    //getTransitionStr();
+            
             behaviour.getTraces().add(transition);
         }
 
@@ -89,13 +97,12 @@ System.out.println("A: " + A + " B: " + B);
                         System.out.println("A != B");
                         if (!ParsingUtilities.getDuplicateArrayListElements(model.getEventNames(), objectORbehaviour.getBEEventNames()).contains(A)) {//A is NOT there
                             System.out.println(A + " is NOT in Es and Ei");
-                            if (ParsingUtilities.getDuplicateArrayListElements(model.getEventNames(), objectORbehaviour.getBEEventNames()).contains(B)) { //B is there
-                                System.out.println(B + " IS in Es and Ei");
+ //                           if (ParsingUtilities.getDuplicateArrayListElements(model.getEventNames(), objectORbehaviour.getBEEventNames()).contains(B)) { //B is there
+                                System.out.println(B + " IS in Es and Ei " + "mt=" + mt);
 //                                mtransitions[mt] = doBeforeStateConcat(mtransitions[mt], ParseModel.beforeState(otransitions[ot]));
 //                                mtransitions[mt] = doAfterStateConcat(mtransitions[mt], ParseModel.beforeState(otransitions[ot]));
-                                System.out.println("woven transition: " + mtransitions[mt]);
                                 mt++;
-                            }
+ //                           }
                         } else {//A IS there
                             System.out.println(A + " IS  in Es and Ei");
                             if (ParsingUtilities.getDuplicateArrayListElements(model.getEventNames(), objectORbehaviour.getBEEventNames()).contains(B)) { //B is there
@@ -150,7 +157,7 @@ System.out.println("A: " + A + " B: " + B);
 
     private static void traverse(TransitionNode root, Behaviour behaviour, String path) {
 
-        path += root.getTransitionValues() + "-->";
+        path += root.getTransitionValues(behaviour) + "-->";
         for (TransitionNode child : root.getChildren()) {
             traverse(child, behaviour, path);
         }

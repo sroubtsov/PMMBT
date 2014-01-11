@@ -65,8 +65,8 @@ public class ParseModel {
     }
 
     public static String afterState(String transition) {
-        String beforestate = transition.substring(transition.indexOf("=") + 1);
-        return beforestate;
+        String afterstate = transition.substring(transition.indexOf("=") + 1);
+        return afterstate;
     }
 
     public static ArrayList<String> allEvents(ArrayList<String> transitions) {

@@ -5,7 +5,7 @@ import java.io.IOException;
 
 public class State {
 
-    public String state;
+    private String state;
 
     public State(String state) {
         this.state = state;

@@ -16,11 +16,11 @@ public class Model {
     public ArrayList<Callback> callbacks;
     //for test generation
     public ArrayList<String> traces;
-    private ArrayList<String> eventNames; 
+    private ArrayList<String> eventNames;
+
     public ArrayList<String> getEventNames() {
         return eventNames;
     }
- 
 
     public Model(String name) {
         this.name = name;
@@ -30,16 +30,15 @@ public class Model {
         this.generics = new ArrayList();
         this.actors = new ArrayList();
         this.callbacks = new ArrayList();
-          //for test generation
+        //for test generation
         this.traces = new ArrayList();
         this.eventNames = new ArrayList();
     }
 
-    
     public void writeModel(String fileName) {
         if (!fileName.isEmpty()) {
             try (BufferedWriter out = new BufferedWriter(new FileWriter(fileName))) {
-                out.write("Model: "+ this.name  + "\n");
+                out.write("Model: " + this.name + "\n");
                 for (Actor actor : this.actors) {
                     actor.writeModelElementName(out);
                     actor.writeActor(out);
@@ -65,14 +64,17 @@ public class Model {
                     callback.writeModelElementName(out);
                     callback.writeCallback(out);
                 }
-out.flush(); out.close();
+
+
+                out.flush();
+                out.close();
             } catch (IOException eio) {
                 System.err.println("IOException: " + eio.getMessage());
                 System.exit(1);
             }
 
         } else {
-            System.out.println("Model: "+ this.name);
+            System.out.println("Model: " + this.name);
             for (Actor actor : this.actors) {
                 actor.writeModelElementName();
                 actor.writeActor();
@@ -93,13 +95,13 @@ out.flush(); out.close();
                 generic.writeModelElementName();
                 generic.writeGeneric();
             }
-            for (Callback callback : this.callbacks) {
-                callback.writeModelElementName();
-                callback.writeCallback();
-            }
+//            for (Callback callback : this.callbacks) {
+//                callback.writeModelElementName();
+//                callback.writeCallback();
+//            }
 
 
         }
-        
+
     }
 }

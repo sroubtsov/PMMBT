@@ -4,6 +4,7 @@ import protocolmodelingmbt.parser.ParseModel;
 import protocolmodelingmbt.model.State;
 import protocolmodelingmbt.model.Event;
 import java.util.ArrayList;
+import protocolmodelingmbt.model.Behaviour;
 
 public class TransitionNode {
 
@@ -56,7 +57,7 @@ public class TransitionNode {
     }
     
     
-    public String getTransitionValues(){
-        return this.beforeState.getState() + "*" + this.action.getAction() + "=" + this.afterState.getState();
+    public String getTransitionValues(Behaviour behaviour){
+        return ParsingUtilities.parseMSname(Grammar.OBJECT,behaviour.getModelElementName())+ "." + this.beforeState.getState() + "*" + this.action.getAction() + "=" + ParsingUtilities.parseMSname(Grammar.OBJECT,(behaviour.getModelElementName()))+ "." + this.afterState.getState();
     }
 }

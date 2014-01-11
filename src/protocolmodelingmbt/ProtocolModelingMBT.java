@@ -29,7 +29,7 @@ public class ProtocolModelingMBT {
         ParseModel parsemodel = new ParseModel();
         Model model = parsemodel.parseModel(args[0]);
         
- //       model.writeModel("");
+        model.writeModel("");
 //        model.writeModel(args[1]);
         
         for(_Object ob: model.objects){
@@ -38,7 +38,7 @@ public class ProtocolModelingMBT {
 //            for (String ev: ob.getBEEventNames()){
 //              System.out.println(ev);
 //            };
-//            ob.writeTraces();
+            ob.writeTraces();
         } 
         
         for(Behaviour be: model.behaviours){
@@ -48,7 +48,7 @@ public class ProtocolModelingMBT {
 //              System.out.println(ev);
 //            };
 //            
-//            be.writeTraces();
+            be.writeTraces();
         } 
         OBTraceMaker.makeModeltraces(model);
         for(String trace: model.traces){
