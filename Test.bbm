@@ -1,0 +1,69 @@
+
+
+MODEL  Test
+
+# OBJECT definitions
+
+# test of insertion A<>B
+
+OBJECT O
+	NAME ON
+	ATTRIBUTES ON: String,
+	STATES  x, b 
+	TRANSITIONS @new*A=x,
+	x*B=x,
+	x*C=x, 	
+	x*F=x,
+	
+
+# A,B,C,F	
+
+#O.@new*A=O.x-->O.x*B=O.x-->O.x*C=O.x-->O.x*F=O.x-->|
+#O.@new*A=O.x-->O.x*B=O.x-->O.x*F=O.x-->O.x*C=O.x-->|
+#O.@new*A=O.x-->O.x*C=O.x-->O.x*B=O.x-->O.x*F=O.x-->|
+#O.@new*A=O.x-->O.x*C=O.x-->O.x*F=O.x-->O.x*B=O.x-->|
+#O.@new*A=O.x-->O.x*F=O.x-->O.x*B=O.x-->O.x*C=O.x-->|
+#O.@new*A=O.x-->O.x*F=O.x-->O.x*C=O.x-->O.x*B=O.x-->|
+
+
+OBJECT T
+	NAME TN	  
+	ATTRIBUTES TN: String, RC:String,
+	STATES y, z, v
+	TRANSITIONS @new*B=y, 
+	            y*K=z,
+				z*D=z,
+				z*F=v,
+				
+		
+#B. K, D, F 
+
+#Traces for OBJECTT
+#T.@new*B=T.y-->T.y*K=T.z-->T.z*D=T.z-->T.z*F=T.v-->|
+#T.@new*B=T.y-->T.y*K=T.z-->T.z*F=T.v-->|		  
+# Result       		
+# A,B,C,K,D,F
+#A,B,C,K,F		 
+		
+# EVENT definitions
+
+EVENT A
+	ATTRIBUTES  O: O, ON:String  
+	
+EVENT B
+	ATTRIBUTES  O:O, T:T, TN:String
+
+
+EVENT C
+	ATTRIBUTES O:O
+	
+EVENT F
+	ATTRIBUTES O:O, T: T, 
+	
+EVENT K
+	ATTRIBUTES T: T,
+	
+EVENT D
+	ATTRIBUTES T: T,
+
+

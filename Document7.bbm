@@ -1,0 +1,170 @@
+MODEL Document7
+
+#BEHAVIOUR DEFINITIONS	
+OBJECT Coordinator
+NAME NameCoordinator
+INCLUDES  Act
+ATTRIBUTES NameCoordinator:String 
+STATES created
+TRANSITIONS @new*CreateCoordinator= created,
+			created*CreateParticipant=created,
+			created*CreateDoc=created,
+			created*UpdateDoc=created,
+			created*CreatePart=created,
+			created*AssignPart=created,			
+           	created*SubmitDoc=created,		
+			created*CancelDoc=created
+		
+OBJECT Document
+NAME Name
+INCLUDES   DeadlineControl, 
+			DocumentSubmittable, 
+			DeadlineCorrectness,
+			DuplicateCheck
+ATTRIBUTES 
+Name:String, Deadline:Date,
+Coordinator:Coordinator
+STATES created, submitted, cancelled 
+TRANSITIONS @new*CreateDoc= created,
+			created*UpdateDoc=created,
+			created*CreatePart=created,
+			created*AssignPart=created,
+			created*SubmitDoc=submitted,		
+			created*CancelDoc=cancelled		
+
+BEHAVIOUR !DeadlineCorrectness
+# Deadline is later than the current date 
+	STATES correct, not correct
+	TRANSITIONS @any*CreateDoc= correct,
+				@any*UpdateDoc= correct,	
+			
+BEHAVIOUR !DuplicateCheck
+	STATES unique, duplicate
+		TRANSITIONS @any*CreatePart =unique
+		@any*CreateDoc =unique					
+			
+BEHAVIOUR !DeadlineControl
+# Allows SubmitDoc only if 
+# the deadline is not expired 
+	STATES expired, not expired
+	TRANSITIONS @any*SubmitDoc= not expired
+
+BEHAVIOUR !DocumentSubmittable 
+# Ensures that a document  cannot be 
+#submitted if it has unfinished Parts	
+ATTRIBUTES !Document Status: String
+	STATES submittable, not submittable
+	TRANSITIONS submittable*SubmitDoc=@any,
+	            submittable*UpdateDoc=@any 
+	
+BEHAVIOUR !Act
+TYPE DESIRED
+# Motivates some actions
+	STATES act, wait
+	TRANSITIONS act*AssignPart=@any,
+				act*CreateParticipant=@any	        
+				
+OBJECT Part
+NAME Name
+INCLUDES   DeadlinePartCorrectness, 
+			DuplicateCheck
+ATTRIBUTES Name: String, 
+	DeadlinePart:Date, 
+	Document:Document, 
+	Participant:Participant,!Status:String
+STATES created,submitted
+TRANSITIONS @new* CreatePart= created,
+            created*AssignPart=created,
+			created*SubmitPart=submitted
+			
+			
+BEHAVIOUR !DeadlinePartCorrectness
+# DeadlinPart is earlier 
+#than the Deadline of the Document 
+	STATES correct, not correct
+	TRANSITIONS @any*CreatePart= correct,	
+				@any*AssignPart=correct,
+				@any*SubmitPart=correct	
+
+
+		
+OBJECT Participant
+NAME NameParticipant
+ATTRIBUTES 
+NameParticipant: String, 
+Document:Document
+STATES created
+TRANSITIONS 
+	@new* CreateParticipant= created,
+	created*AssignPart=created,
+	created*SubmitPart=created,	
+			
+               
+#EVENT DEFINITIONS
+
+EVENT CreateCoordinator
+ATTRIBUTES  
+	NameCoordinator:String, 
+	Coordinator:Coordinator	
+		
+EVENT CreateDoc
+ATTRIBUTES
+	Document:Document, 
+	Name:String,  
+	Deadline:Date, 
+	Coordinator:Coordinator	
+	
+EVENT UpdateDoc
+ATTRIBUTES  
+	Document:Document, 
+	Name:String,  
+	Deadline:Date,
+	Coordinator:Coordinator	
+			
+EVENT SubmitDoc
+ATTRIBUTES 
+	Document: Document,
+	Coordinator:Coordinator
+	
+EVENT CancelDoc
+ATTRIBUTES  
+	Document:Document,
+	Coordinator:Coordinator
+
+EVENT CreatePart
+ATTRIBUTES  
+	Part:Part, 
+	Name:String,  
+	DeadlinePart:Date, 
+	Coordinator:Coordinator,
+	Document:Document,
+	
+EVENT AssignPart
+ATTRIBUTES 
+	Document:Document, 
+	Part:Part, 
+	DeadlinePart:Date, 
+	Participant:Participant,
+	Coordinator:Coordinator
+
+EVENT SubmitPart
+ATTRIBUTES 
+	Part:Part,  
+	Participant:Participant
+		
+EVENT CreateParticipant
+ATTRIBUTES  
+	Participant:Participant,
+	NameParticipant:String, 
+	Coordinator:Coordinator		
+
+GENERIC Create
+MATCHES CreateDoc, CreatePart[Document]
+
+		
+
+	
+
+
+
+

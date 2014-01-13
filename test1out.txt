@@ -1,0 +1,206 @@
+Traces for OBJECTO
+O.@new*A=O.x-->O.x*B=O.x-->O.x*C=O.x-->O.x*F=O.x-->|
+O.@new*A=O.x-->O.x*B=O.x-->O.x*F=O.x-->O.x*C=O.x-->|
+O.@new*A=O.x-->O.x*C=O.x-->O.x*B=O.x-->O.x*F=O.x-->|
+O.@new*A=O.x-->O.x*C=O.x-->O.x*F=O.x-->O.x*B=O.x-->|
+O.@new*A=O.x-->O.x*F=O.x-->O.x*B=O.x-->O.x*C=O.x-->|
+O.@new*A=O.x-->O.x*F=O.x-->O.x*C=O.x-->O.x*B=O.x-->|
+Traces for OBJECTT
+T.@new*B=T.y-->T.y*K=T.z-->T.z*D=T.z-->T.z*F=T.v-->|
+T.@new*B=T.y-->T.y*K=T.z-->T.z*F=T.v-->|
+Disjoint algorithm for OBJECTO
+Woven algorithm
+====
+TS: O.@new*A=O.x-->O.x*B=O.x-->O.x*C=O.x-->O.x*F=O.x-->|
+Ti: T.@new*B=T.y-->T.y*K=T.z-->T.z*D=T.z-->T.z*F=T.v-->|
+System event: A Object event: B
+case System event != Object event
+A is NOT in Es AND Ei
+B IS in Es AND Ei
+System event: B Object event: B
+case System event = Object event
+System event: C Object event: K
+case System event != Object event
+C is NOT in Es AND Ei
+K IS in Es AND Ei
+System event: F Object event: K
+case System event != Object event
+F IS  in Es AND Ei
+K IS NOT in Es AND Ei
+System event: K Object event: D
+case System event != Object event
+K is NOT in Es AND Ei
+D IS in Es AND Ei
+with tail: O.@new&T.@new*A=O.x&T.@new-->O.x&T.@new*B=O.x&T.y-->O.x&T.y*C=O.x&T.y-->O.x&T.y&T.z*K=O.x&T.z-->O.x&T.y*F=O.x&T.y-->T.z*D=T.z-->T.z*F=T.v-->|
+====
+TS: O.@new&T.@new*A=O.x&T.@new-->O.x&T.@new*B=O.x&T.y-->O.x&T.y*C=O.x&T.y-->O.x&T.y&T.z*K=O.x&T.z-->O.x&T.y*F=O.x&T.y-->T.z*D=T.z-->T.z*F=T.v-->|
+Ti: T.@new*B=T.y-->T.y*K=T.z-->T.z*F=T.v-->|
+System event: A Object event: B
+case System event != Object event
+A is NOT in Es AND Ei
+B IS in Es AND Ei
+System event: B Object event: B
+case System event = Object event
+System event: C Object event: K
+case System event != Object event
+C is NOT in Es AND Ei
+K IS in Es AND Ei
+System event: K Object event: K
+case System event = Object event
+with tail: O.@new&T.@new*A=O.x&T.@new-->O.x&T.@new*B=O.x&T.y-->O.x&T.y*C=O.x&T.y-->O.x&T.y&T.z*K=O.x&T.z-->O.x&T.y*F=O.x&T.y-->T.z*F=T.v-->|
+====
+TS: O.@new*A=O.x-->O.x*B=O.x-->O.x*F=O.x-->O.x*C=O.x-->|
+Ti: T.@new*B=T.y-->T.y*K=T.z-->T.z*D=T.z-->T.z*F=T.v-->|
+System event: A Object event: B
+case System event != Object event
+A is NOT in Es AND Ei
+B IS in Es AND Ei
+System event: B Object event: B
+case System event = Object event
+System event: F Object event: K
+case System event != Object event
+F IS  in Es AND Ei
+K IS NOT in Es AND Ei
+System event: K Object event: D
+case System event != Object event
+K is NOT in Es AND Ei
+D IS in Es AND Ei
+System event: C Object event: D
+case System event != Object event
+C is NOT in Es AND Ei
+D IS in Es AND Ei
+with tail: O.@new&T.@new*A=O.x&T.@new-->O.x&T.@new*B=O.x&T.y-->O.x&T.y&T.z*K=O.x&T.z-->O.x&T.y*F=O.x&T.y-->O.x&T.z*C=O.x&T.z-->T.z*D=T.z-->T.z*F=T.v-->|
+====
+TS: O.@new&T.@new*A=O.x&T.@new-->O.x&T.@new*B=O.x&T.y-->O.x&T.y&T.z*K=O.x&T.z-->O.x&T.y*F=O.x&T.y-->O.x&T.z*C=O.x&T.z-->T.z*D=T.z-->T.z*F=T.v-->|
+Ti: T.@new*B=T.y-->T.y*K=T.z-->T.z*F=T.v-->|
+System event: A Object event: B
+case System event != Object event
+A is NOT in Es AND Ei
+B IS in Es AND Ei
+System event: B Object event: B
+case System event = Object event
+System event: K Object event: K
+case System event = Object event
+System event: C Object event: F
+case System event != Object event
+C is NOT in Es AND Ei
+F IS in Es AND Ei
+====
+TS: O.@new*A=O.x-->O.x*C=O.x-->O.x*B=O.x-->O.x*F=O.x-->|
+Ti: T.@new*B=T.y-->T.y*K=T.z-->T.z*D=T.z-->T.z*F=T.v-->|
+System event: A Object event: B
+case System event != Object event
+A is NOT in Es AND Ei
+B IS in Es AND Ei
+System event: C Object event: B
+case System event != Object event
+C is NOT in Es AND Ei
+B IS in Es AND Ei
+System event: B Object event: B
+case System event = Object event
+System event: F Object event: K
+case System event != Object event
+F IS  in Es AND Ei
+K IS NOT in Es AND Ei
+System event: K Object event: D
+case System event != Object event
+K is NOT in Es AND Ei
+D IS in Es AND Ei
+with tail: O.@new&T.@new*A=O.x&T.@new-->O.x&T.@new*C=O.x&T.@new-->O.x&T.@new*B=O.x&T.y-->O.x&T.y&T.z*K=O.x&T.z-->O.x&T.y*F=O.x&T.y-->T.z*D=T.z-->T.z*F=T.v-->|
+====
+TS: O.@new&T.@new*A=O.x&T.@new-->O.x&T.@new*C=O.x&T.@new-->O.x&T.@new*B=O.x&T.y-->O.x&T.y&T.z*K=O.x&T.z-->O.x&T.y*F=O.x&T.y-->T.z*D=T.z-->T.z*F=T.v-->|
+Ti: T.@new*B=T.y-->T.y*K=T.z-->T.z*F=T.v-->|
+System event: A Object event: B
+case System event != Object event
+A is NOT in Es AND Ei
+B IS in Es AND Ei
+System event: C Object event: B
+case System event != Object event
+C is NOT in Es AND Ei
+B IS in Es AND Ei
+System event: B Object event: B
+case System event = Object event
+System event: K Object event: K
+case System event = Object event
+with tail: O.@new&T.@new*A=O.x&T.@new-->O.x&T.@new*C=O.x&T.@new-->O.x&T.@new*B=O.x&T.y-->O.x&T.y&T.z*K=O.x&T.z-->O.x&T.y*F=O.x&T.y-->T.z*F=T.v-->|
+====
+TS: O.@new*A=O.x-->O.x*C=O.x-->O.x*F=O.x-->O.x*B=O.x-->|
+Ti: T.@new*B=T.y-->T.y*K=T.z-->T.z*D=T.z-->T.z*F=T.v-->|
+System event: A Object event: B
+case System event != Object event
+A is NOT in Es AND Ei
+B IS in Es AND Ei
+System event: C Object event: B
+case System event != Object event
+C is NOT in Es AND Ei
+B IS in Es AND Ei
+System event: F Object event: B
+case System event != Object event
+F IS  in Es AND Ei
+SequenceCut here
+====
+TS: O.@new&T.@new*A=O.x&T.@new-->O.x&T.@new*C=O.x&T.@new-->O.x*F=O.x-->O.x*B=O.x-->|
+Ti: T.@new*B=T.y-->T.y*K=T.z-->T.z*F=T.v-->|
+System event: A Object event: B
+case System event != Object event
+A is NOT in Es AND Ei
+B IS in Es AND Ei
+System event: C Object event: B
+case System event != Object event
+C is NOT in Es AND Ei
+B IS in Es AND Ei
+System event: F Object event: B
+case System event != Object event
+F IS  in Es AND Ei
+SequenceCut here
+====
+TS: O.@new*A=O.x-->O.x*F=O.x-->O.x*B=O.x-->O.x*C=O.x-->|
+Ti: T.@new*B=T.y-->T.y*K=T.z-->T.z*D=T.z-->T.z*F=T.v-->|
+System event: A Object event: B
+case System event != Object event
+A is NOT in Es AND Ei
+B IS in Es AND Ei
+System event: F Object event: B
+case System event != Object event
+F IS  in Es AND Ei
+SequenceCut here
+====
+TS: O.@new&T.@new*A=O.x&T.@new-->O.x*F=O.x-->O.x*B=O.x-->O.x*C=O.x-->|
+Ti: T.@new*B=T.y-->T.y*K=T.z-->T.z*F=T.v-->|
+System event: A Object event: B
+case System event != Object event
+A is NOT in Es AND Ei
+B IS in Es AND Ei
+System event: F Object event: B
+case System event != Object event
+F IS  in Es AND Ei
+SequenceCut here
+====
+TS: O.@new*A=O.x-->O.x*F=O.x-->O.x*C=O.x-->O.x*B=O.x-->|
+Ti: T.@new*B=T.y-->T.y*K=T.z-->T.z*D=T.z-->T.z*F=T.v-->|
+System event: A Object event: B
+case System event != Object event
+A is NOT in Es AND Ei
+B IS in Es AND Ei
+System event: F Object event: B
+case System event != Object event
+F IS  in Es AND Ei
+SequenceCut here
+====
+TS: O.@new&T.@new*A=O.x&T.@new-->O.x*F=O.x-->O.x*C=O.x-->O.x*B=O.x-->|
+Ti: T.@new*B=T.y-->T.y*K=T.z-->T.z*F=T.v-->|
+System event: A Object event: B
+case System event != Object event
+A is NOT in Es AND Ei
+B IS in Es AND Ei
+System event: F Object event: B
+case System event != Object event
+F IS  in Es AND Ei
+SequenceCut here
+O.@new&T.@new*A=O.x&T.@new-->O.x&T.@new*B=O.x&T.y-->O.x&T.y*C=O.x&T.y-->O.x&T.y&T.z*K=O.x&T.z-->O.x&T.y*F=O.x&T.y-->T.z*F=T.v-->|
+O.@new&T.@new*A=O.x&T.@new-->O.x&T.@new*B=O.x&T.y-->O.x&T.y&T.z*K=O.x&T.z-->O.x&T.y*F=O.x&T.y-->O.x&T.z*C=O.x&T.z-->|
+O.@new&T.@new*A=O.x&T.@new-->O.x&T.@new*C=O.x&T.@new-->O.x&T.@new*B=O.x&T.y-->O.x&T.y&T.z*K=O.x&T.z-->O.x&T.y*F=O.x&T.y-->T.z*F=T.v-->|
+O.@new&T.@new*A=O.x&T.@new-->O.x&T.@new*C=O.x&T.@new-->O.x*F=O.x-->O.x*B=O.x-->|
+O.@new&T.@new*A=O.x&T.@new-->O.x*F=O.x-->O.x*B=O.x-->O.x*C=O.x-->|
+O.@new&T.@new*A=O.x&T.@new-->O.x*F=O.x-->O.x*C=O.x-->O.x*B=O.x-->|
+BUILD SUCCESSFUL (total time: 1 second)
