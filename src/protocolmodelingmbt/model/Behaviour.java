@@ -13,6 +13,7 @@ public class Behaviour extends ModelElement {
     private ArrayList<State> states;
     private ArrayList<Transition> transitions;
     private ArrayList<String> traces;
+    private State currentState;
 
     public ArrayList<String> getTraces() {
         return traces;
@@ -23,10 +24,19 @@ public class Behaviour extends ModelElement {
         this.states = states;
         this.transitions = transitions;
         this.traces = new ArrayList<>();
+        this.currentState = new State("@new");
+    }
+
+    public void setCurrentState(String currentState) {
+        this.currentState.setState(currentState);
     }
 
     public ArrayList<Attribute> getAttributes() {
         return attributes;
+    }
+
+    public String getCurrentState() {
+        return currentState.getState();
     }
 
     public ArrayList<State> getStates() {
@@ -48,6 +58,40 @@ public class Behaviour extends ModelElement {
     public ArrayList<String> getBEEventNames(){
         return ParseModel.allEvents(getTransitionStrings());
     }
+    
+    
+    public String getbeforeStateForEventName(String eventname){
+        String beforestate = "";
+        for(Transition tr: this.transitions){
+            if(tr.getAction().getAction().equals(eventname)){
+                beforestate = tr.getBeforeState().getState();
+                break;
+            }
+        }
+        return beforestate;
+    }
+    
+    public String getafterStateForEventName(String eventname){
+        String afterstate = "";
+        for(Transition tr: this.transitions){
+            if(tr.getAction().getAction().equals(eventname)){
+                afterstate = tr.getAfterState().getState();
+                break;
+            }
+        }
+        return afterstate;
+    }
+    
+    
+    public void setAfterStateAsCurrentForEventName(String eventname){        
+        for(Transition tr: this.transitions){
+            if(tr.getAction().getAction().equals(eventname)){
+                this.currentState.setState(tr.getAfterState().getState());
+                break;
+            }
+        }
+    }
+    
     
     public void writeBehaviour(BufferedWriter out) throws IOException {
         out.write(Grammar.ATTRIBUTES + "\n");

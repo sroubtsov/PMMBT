@@ -196,7 +196,7 @@ public class ParseModel {
             }
         }
         this.model.events.add(event);
-        System.out.println("... creating event " + event.getAction());
+//        System.out.println("... creating event " + event.getAction());
 //        event.writeEvent();
     }
 
@@ -260,7 +260,7 @@ public class ParseModel {
             }
         }
         this.model.objects.add(object);
-        System.out.println("... creating object " + object.getName());
+//        System.out.println("... creating object " + object.getName());
 //        object.writeObject();
     }
 
@@ -313,7 +313,7 @@ public class ParseModel {
             }
         }
         this.model.behaviours.add(behaviour);
-        System.out.println("... creating behaviour " + behaviour.getModelElementName());
+  //      System.out.println("... creating behaviour " + behaviour.getModelElementName());
  //       behaviour.writeBehaviour();
     }
 
@@ -339,7 +339,7 @@ public class ParseModel {
             }
         }
         this.model.generics.add(generic);
-        System.out.println("... creating generic ");
+ //       System.out.println("... creating generic ");
 //        generic.writeGeneric();
     }
 
@@ -349,14 +349,13 @@ public class ParseModel {
         //2 - parse public class ... for the name of the corresponding object; 
         //3 - store it to the object as well
         this.model.callbacks.add(callback);
-        System.out.println("... creating callback ");
+//        System.out.println("... creating callback ");
 //        callback.writeCallback();
 
 
     }
 
     private void createModelElement(PARSESTATE parsestate, ArrayList<String> element) {
-        System.out.println("-->" + parsestate);
         if (parsestate == PARSESTATE.actor) {
             //TODO
         } else if (parsestate == PARSESTATE.generic) {

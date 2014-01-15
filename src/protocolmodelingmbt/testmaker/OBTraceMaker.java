@@ -60,13 +60,96 @@ public class OBTraceMaker {
         }
     }
 
+    private static void makeTraceForAllowedEvents(Model model, ArrayList<Behaviour> protocolMachines, ArrayList<String> allowedEventNames) {
+        ArrayList<String> nextAllowedEventNames = new ArrayList<>();
+        ArrayList<String> firedEventNames = new ArrayList<>();
+        nextAllowedEventNames.addAll(allowedEventNames);
+        for (String ev : allowedEventNames) {
+            boolean allowed = true;
+            ArrayList<Behaviour> involvedPMs = new ArrayList<>();
+            for (Behaviour o : protocolMachines) {
+                if (o.getBEEventNames().contains(ev)) {
+                    //            System.out.println(o.getModelElementName() + "  state=" + o.getCurrentState() + " event = " + ev);
+                    if (!o.getbeforeStateForEventName(ev).equals(o.getCurrentState())) {
+                        allowed = false;//event is NOT allowed
+                        //                  System.out.println(allowed);
+                        break; //into event firing
+                    } else {
+                    }
+                    involvedPMs.add(o);
+                } else {
+                    //nothing?
+                }
+                if (allowed) {
+                    firedEventNames.add(ev);
+                    nextAllowedEventNames.remove(ev);
+                }
+            }
+            if (allowed) {
+
+                //Put the corresponding objects into corresponding states
+                for (Behaviour o : involvedPMs) {
+                    o.setAfterStateAsCurrentForEventName(ev);
+                    //                System.out.println(o.getModelElementName() + "  state=" + o.getCurrentState());
+                }
+                //Place the transition into the trace
+                for (String fev : firedEventNames) {
+                    System.out.print(concatPMBeforeStatesForAllowedEvent(ev, involvedPMs) + "*" + fev + "=" + concatPMAfterStatesForAllowedEvent(ev, involvedPMs) + " --> ");
+                }
+                if (!nextAllowedEventNames.isEmpty()) {
+                    makeTraceForAllowedEvents(model, protocolMachines, nextAllowedEventNames);
+                } else {
+                    System.out.println("|");
+                }
+
+            }
+            //Go further
+
+        }
+
+
+
+
+    }
+
+    private static String concatPMBeforeStatesForAllowedEvent(String ev, ArrayList<Behaviour> protocolMachines) {
+        String beforeState = "";
+        for (Behaviour pm : protocolMachines) {
+            beforeState = beforeState + ParsingUtilities.parseMSname(Grammar.OBJECT, pm.getModelElementName()) + "." + pm.getbeforeStateForEventName(ev) + "&";
+        }
+        return beforeState;
+    }
+
+    private static String concatPMAfterStatesForAllowedEvent(String ev, ArrayList<Behaviour> protocolMachines) {
+        String afterState = "";
+        for (Behaviour pm : protocolMachines) {
+            afterState = afterState + ParsingUtilities.parseMSname(Grammar.OBJECT, pm.getModelElementName()) + "." + pm.getafterStateForEventName(ev) + "&";
+        }
+        return afterState;
+    }
+
+    public static void weaveTracesFromObjects(Model model) {
+        ArrayList<Behaviour> protocolMachines = new ArrayList<>();
+        protocolMachines.addAll(model.objects);
+        protocolMachines.addAll(model.behaviours);
+        //Put each object&behaviour into initial state & make a list of model event names
+        for (Behaviour pm : protocolMachines) {
+            pm.setCurrentState("@new");
+            System.out.println(pm.getModelElementName() + "  state=" + pm.getCurrentState());
+            model.getEventNames().addAll(ParsingUtilities.getUniqueArrayListElements(model.getEventNames(), pm.getBEEventNames()));
+        }
+
+        makeTraceForAllowedEvents(model, protocolMachines, model.getEventNames());
+
+    }
+
     private static void weaveTracesWith(Model model, Behaviour objectORbehaviour) {
         String[] otransitions = null;
         String[] mtransitions = null;
         String A = null;
         String B = null;
         boolean sequenceCut;
-
+        int counter = 0;
         for (String mtrace : model.traces) {//For each model trace
             int modelTraceIndex = model.traces.indexOf(mtrace);
             mtransitions = splitTrace(mtrace);
@@ -81,39 +164,39 @@ public class OBTraceMaker {
 
                 int mt = 0;
                 int ot = 0;
-                System.out.println("====");
+                System.out.println("==== weaving #" + ++counter);
                 System.out.println("TS: " + mtrace);
                 System.out.println("Ti: " + otrace);
                 do { //do weawing
                     sequenceCut = false;
                     A = ParseModel.getEvent(mtransitions[mt]);
                     B = ParseModel.getEvent(otransitions[ot]);
-                    System.out.println("System event: " + A + " Object event: " + B);
+//                    System.out.println("System event: " + A + " Object event: " + B);
                     if (A.equals(B)) { //A = B
                         mtransitions[mt] = doBeforeStateConcat(mtransitions[mt], ParseModel.beforeState(otransitions[ot]));
                         mtransitions[mt] = doAfterStateConcat(mtransitions[mt], ParseModel.afterState(otransitions[ot]));
- //                       System.out.println("woven transition: " + mtransitions[mt]);
-                        System.out.println("case System event = Object event");
+                        //                       System.out.println("woven transition: " + mtransitions[mt]);
+                        //                       System.out.println("case System event = Object event");
                         mt++;
                         ot++;
                     } else {//A != B
-                        System.out.println("case System event != Object event");
+                        //                       System.out.println("case System event != Object event");
                         if (!ParsingUtilities.getDuplicateArrayListElements(model.getEventNames(), objectORbehaviour.getBEEventNames()).contains(A)) {//A is NOT there
-                            System.out.println(A + " is NOT in Es AND Ei");
+                            //                           System.out.println(A + " is NOT in Es AND Ei");
                             //                           if (ParsingUtilities.getDuplicateArrayListElements(model.getEventNames(), objectORbehaviour.getBEEventNames()).contains(B)) { //B is there
-                            System.out.println(B + " IS in Es AND Ei");
+                            //                           System.out.println(B + " IS in Es AND Ei");
                             mtransitions[mt] = doBeforeStateConcat(mtransitions[mt], ParseModel.beforeState(otransitions[ot]));
                             mtransitions[mt] = doAfterStateConcat(mtransitions[mt], ParseModel.beforeState(otransitions[ot]));
                             mt++;
                             //                           }
                         } else {//A IS there
-                            System.out.println(A + " IS  in Es AND Ei");
+//                            System.out.println(A + " IS  in Es AND Ei");
                             if (ParsingUtilities.getDuplicateArrayListElements(model.getEventNames(), objectORbehaviour.getBEEventNames()).contains(B)) { //B is there
                                 System.out.println("SequenceCut here"); //deadlock  
                                 sequenceCut = true;
                                 break;
                             } else {//B is NOT there
-                                System.out.println(B + " IS NOT in Es AND Ei");
+                                //                               System.out.println(B + " IS NOT in Es AND Ei");
                                 mtransitions[mt] = doTrReplaceAndAdd(mtransitions[mt], otransitions[ot]);
 //                                System.out.println("woven transition: " + mtransitions[mt]);
                                 ot++;
@@ -128,8 +211,9 @@ public class OBTraceMaker {
                     //TConactenate mtrasitions with the rest of otranstions;
                     //            otrace = glueTrace(otransitions,0);
                     mtrace = mtrace.replaceAll("\\|", "") /*it's not the termination yet*/ + glueTrace(otransitions, ot);
-                    System.out.println("with tail: " + mtrace);
+//                    System.out.println("with tail: " + mtrace);
                 }
+                System.out.println("glued at #" + counter + ": " + mtrace);
                 model.traces.set(modelTraceIndex, mtrace);
 
             }
@@ -193,15 +277,15 @@ public class OBTraceMaker {
     private static String doTrReplaceAndAdd(String mtransition, String otransition) {
         String newmtransition = "";
         String insmttransition = "";
- //       System.out.print(mtransition);
- //       System.out.println(" and "+otransition);
+        //       System.out.print(mtransition);
+        //       System.out.println(" and "+otransition);
         //before state change
         newmtransition = doBeforeStateConcat(mtransition, ParseModel.beforeState(otransition));
         //change event
         newmtransition = ParseModel.beforeState(newmtransition) + "*" + ParseModel.getEvent(otransition) + "=" + ParseModel.beforeState(mtransition);
         //afterstate change
         newmtransition = doAfterStateConcat(newmtransition, ParseModel.afterState(otransition));
-        
+
         //insert transaction
         //SR this is bad but for the time being... TODO: Separate funntion for inserting transition?
         //beforestate change in the initial one
@@ -210,7 +294,7 @@ public class OBTraceMaker {
         insmttransition = doAfterStateConcat(insmttransition, ParseModel.beforeState(otransition));
         //concat the both
         newmtransition = newmtransition + "-->" + insmttransition;
-  //      System.out.println("become "+newmtransition);
+        //      System.out.println("become "+newmtransition);
         return newmtransition;
     }
 }
