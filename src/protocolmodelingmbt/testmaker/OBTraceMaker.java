@@ -35,11 +35,11 @@ public class OBTraceMaker {
     public static void makeBEtraces(Behaviour behaviour) {
         String transition = "";
         for (int i = 0; i < behaviour.getTransitions().size(); i++) {
-            transition = ParsingUtilities.parseMSname(Grammar.BEHAVIOUR, behaviour.getModelElementName()) + "."
-                    + behaviour.getTransitions().get(i).getBeforeState().getState() + "*"
+            transition = /*ParsingUtilities.parseMSname(Grammar.BEHAVIOUR, behaviour.getModelElementName()) + "."
+                    + */behaviour.getTransitions().get(i).getBeforeState().getState() + "*"
                     + behaviour.getTransitions().get(i).getAction().getAction() + "="
-                    + ParsingUtilities.parseMSname(Grammar.BEHAVIOUR, behaviour.getModelElementName()) + "."
-                    + behaviour.getTransitions().get(i).getAfterState().getState();
+                    + /*ParsingUtilities.parseMSname(Grammar.BEHAVIOUR, behaviour.getModelElementName()) + "."
+                    + */behaviour.getTransitions().get(i).getAfterState().getState();
 
             //getTransitionStr();
             behaviour.getTraces().add(transition);
