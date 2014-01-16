@@ -39,6 +39,7 @@ public class ProtocolModelingMBT {
 //            for (String ev: ob.getBEEventNames()){
 //              System.out.println(ev);
 //            };
+            ob.writeBehaviour();
             ob.writeTraces();
         } 
         
