@@ -43,14 +43,14 @@ public class ParsingUtilities {
         return liststring;
     }
 
-    public static String StringArray2Str(String[] strarr){
+    public static String StringArray2Str(String[] strarr) {
         String arraystring = "";
-        for(int i = 0; i < strarr.length; i++){
+        for (int i = 0; i < strarr.length; i++) {
             arraystring.concat(strarr[i]);
         }
         return arraystring;
     }
-    
+
     public static boolean existsInTypes(String test) {
 
         for (Types c : Types.values()) {
@@ -101,17 +101,16 @@ public class ParsingUtilities {
         }
         return duplicates;
     }
+
     public static ArrayList<String> getUnionOfArrayListElements(ArrayList<String> hostList/*model*/, ArrayList<String> guestList/*object*/) {
         ArrayList<String> duplicates = new ArrayList<>();
         duplicates.addAll(hostList);
-        duplicates.addAll(guestList);
         for (String item : guestList) {
             if (hostList.contains(item)) {
-                duplicates.add(item);
+                guestList.remove(item);
             }
         }
+        duplicates.addAll(guestList);
         return duplicates;
     }
-    
-    
 }

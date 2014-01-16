@@ -134,13 +134,13 @@ public class OBTraceMaker {
     public static Behaviour buildCSPComposition(Behaviour o1, Behaviour o2) {
         Behaviour ocom;
         ArrayList<Transition> ocomtransitions = new ArrayList<Transition>();//emptuy in the beginning
-        ocom = new Behaviour(new ArrayList<Attribute>(), CartesianProductOfStates(o1, o2),ocomtransitions);
-        for (int i = 0; i< o1.getStates().size(); i++){
-            for (int j = 0; j< o2.getStates().size(); j++){
-                for (int k = 0; k< o1.getStates().size(); k++){
-                    for (int h = 0; h< o1.getStates().size(); h++){
-                        for(String ev: ParsingUtilities.getDuplicateArrayListElements(o1.getBEEventNames(),o2.getBEEventNames()))  {
-                            
+        ocom = new Behaviour(new ArrayList<Attribute>(), new ArrayList<State>(), ocomtransitions);
+        for (int i = 0; i < o1.getStates().size(); i++) {
+            for (int j = 0; j < o2.getStates().size(); j++) {
+                for (int k = 0; k < o1.getStates().size(); k++) {
+                    for (int h = 0; h < o1.getStates().size(); h++) {
+                        for (String ev : unionOfEvents(o1,o2)) {
+                            if(o1.getStates().get(i)) 
                         }
                     }
                 }
@@ -331,7 +331,11 @@ public class OBTraceMaker {
         return stcartproduct;
     }
 
-    private static ArrayList<String> IntersectionOfEvents(Behaviour be1, Behaviour be2) {
+    private static ArrayList<String> intersectionOfEvents(Behaviour be1, Behaviour be2) {
         return ParsingUtilities.getDuplicateArrayListElements(be1.getBEEventNames(), be2.getBEEventNames());
+    }
+
+    private static ArrayList<String> unionOfEvents(Behaviour be1, Behaviour be2) {
+        return ParsingUtilities.getUnionOfArrayListElements(be1.getBEEventNames(), be2.getBEEventNames());
     }
 }
