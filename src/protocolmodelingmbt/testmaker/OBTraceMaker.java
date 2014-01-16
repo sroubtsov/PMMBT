@@ -185,7 +185,7 @@ public class OBTraceMaker {
                                 }
                             } else if (((o2.getStates().get(j) != o2.getStates().get(h)) && (o1.getStates().get(i) != o1.getStates().get(k)))) {
 System.out.println(" case 3");
-                                for (String ev : o1Eset) {
+                                for (String ev : ParsingUtilities.getDuplicateArrayListElements(o1Eset, o2Eset)) {
                                     if (o1o2EIntersection.contains(ev)) {
                                         Transition tr = new Transition(new State(o1.getStates().get(i).getState() + "&"
                                                 + o2.getStates().get(j).getState()),
@@ -196,17 +196,17 @@ System.out.println(" case 3");
 
                                     }
                                 }
-                                for (String ev : o2Eset) {
-                                    if (o1o2EIntersection.contains(ev)) {
-                                        Transition tr = new Transition(new State(o1.getStates().get(i).getState() + "&"
-                                                + o2.getStates().get(j).getState()),
-                                                new Event(ev),
-                                                new State(o1.getStates().get(k).getState() + "&" + o2.getStates().get(h).getState()));
-                                        System.out.println("*" + tr.getTransitionStr());
-                                        ocomp.getTransitions().add(tr);
-
-                                    }
-                                }
+//                                for (String ev : o2Eset) {
+//                                    if (o1o2EIntersection.contains(ev)) {
+//                                        Transition tr = new Transition(new State(o1.getStates().get(i).getState() + "&"
+//                                                + o2.getStates().get(j).getState()),
+//                                                new Event(ev),
+//                                                new State(o1.getStates().get(k).getState() + "&" + o2.getStates().get(h).getState()));
+//                                        System.out.println("*" + tr.getTransitionStr());
+//                                        ocomp.getTransitions().add(tr);
+//
+//                                    }
+//                                }
 
                             }
 
