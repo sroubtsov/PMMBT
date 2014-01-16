@@ -3,6 +3,7 @@ package protocolmodelingmbt.testmaker;
 import java.util.ArrayList;
 import protocolmodelingmbt.model.Attribute;
 import protocolmodelingmbt.model.Behaviour;
+import protocolmodelingmbt.model.Event;
 import protocolmodelingmbt.model.Model;
 import protocolmodelingmbt.model.State;
 import protocolmodelingmbt.model.Transition;
@@ -46,23 +47,22 @@ public class OBTraceMaker {
 
     }
 
-    public static void makeModeltraces(Model model) {
-        ArrayList<Behaviour> protocolMachines = new ArrayList<>();
-        protocolMachines.addAll(model.objects);
-        protocolMachines.addAll(model.behaviours);
-        for (int i = 0; i < protocolMachines.size(); i++) {
-            if (ParsingUtilities.ifDisjointArrayLists(model.getEventNames(), protocolMachines.get(i).getBEEventNames())) {
-                System.out.println("Disjoint algorithm for " + protocolMachines.get(i).getModelElementName());
-                model.traces.addAll(protocolMachines.get(i).getTraces());
-            } else {
-                System.out.println("Woven algorithm");
-                weaveTracesWith(model, protocolMachines.get(i));
-                //               model.traces.addAll(protocolMachines.get(i).getTraces());
-            }
-            model.getEventNames().addAll(ParsingUtilities.getUniqueArrayListElements(model.getEventNames(), protocolMachines.get(i).getBEEventNames()));
-        }
-    }
-
+//    public static void makeModeltraces(Model model) {
+//        ArrayList<Behaviour> protocolMachines = new ArrayList<>();
+//        protocolMachines.addAll(model.objects);
+//        protocolMachines.addAll(model.behaviours);
+//        for (int i = 0; i < protocolMachines.size(); i++) {
+//            if (ParsingUtilities.ifDisjointArrayLists(model.getEventNames(), protocolMachines.get(i).getBEEventNames())) {
+//                System.out.println("Disjoint algorithm for " + protocolMachines.get(i).getModelElementName());
+//                model.traces.addAll(protocolMachines.get(i).getTraces());
+//            } else {
+//                System.out.println("Woven algorithm");
+//                weaveTracesWith(model, protocolMachines.get(i));
+//                //               model.traces.addAll(protocolMachines.get(i).getTraces());
+//            }
+//            model.getEventNames().addAll(ParsingUtilities.getUniqueArrayListElements(model.getEventNames(), protocolMachines.get(i).getBEEventNames()));
+//        }
+//    }
     private static void makeTraceForAllowedEvents(Model model, ArrayList<Behaviour> protocolMachines, ArrayList<String> allowedEventNames) {
         ArrayList<String> nextAllowedEventNames = new ArrayList<>();
         ArrayList<String> firedEventNames = new ArrayList<>();
@@ -132,29 +132,83 @@ public class OBTraceMaker {
     }
 
     public static Behaviour buildCSPComposition(Behaviour o1, Behaviour o2) {
-        Behaviour ocom;
-        ArrayList<Transition> ocomtransitions = new ArrayList<Transition>();//emptuy in the beginning
-        ocom = new Behaviour(new ArrayList<Attribute>(), new ArrayList<State>(), ocomtransitions);
+        Behaviour ocomp;
+        ocomp = new Behaviour(new ArrayList<Attribute>(), new ArrayList<State>(), new ArrayList<Transition>());
+        ArrayList<String> o1o2EIntersection = ParsingUtilities.getDuplicateArrayListElements(o1.getBEEventNames(), o2.getBEEventNames());
         for (int i = 0; i < o1.getStates().size(); i++) {
             for (int j = 0; j < o2.getStates().size(); j++) {
                 for (int k = 0; k < o1.getStates().size(); k++) {
                     for (int h = 0; h < o1.getStates().size(); h++) {
-                        for (String ev : unionOfEvents(o1,o2)) {
-                            if(o1.getStates().get(i)) 
+                        ArrayList<String> o1Eset = getEventsForBeforeAndAfterStates(o1, o1.getStates().get(i), o1.getStates().get(k));
+                        ArrayList<String> o2Eset = getEventsForBeforeAndAfterStates(o2, o2.getStates().get(j), o2.getStates().get(h));
+                        System.out.println("o1E size = " + o1Eset.size() + " o2E size = " + o2Eset.size());
+                        if ((j == h) && !o1Eset.isEmpty()
+                                || (i == k) && !o2Eset.isEmpty()
+                                || ((j != h) && (i != k) && o1Eset.isEmpty() && o2Eset.isEmpty())) {
+                            if (j == h) {
+                                for (String ev : o1Eset) {
+                                    if (!o1o2EIntersection.contains(ev)) {
+                                        Transition tr = new Transition(new State(o1.getStates().get(i).getState() + "&"
+                                                + o2.getStates().get(j).getState()),
+                                                new Event(ev),
+                                                new State(o1.getStates().get(k).getState() + "&" + o2.getStates().get(h).getState()));
+                                        System.out.println("*" + tr.getTransitionStr());
+                                        ocomp.getTransitions().add(tr);
+                                    }
+                                }
+                            } else if (i == k) {
+                                for (String ev : o2Eset) {
+                                    if (!o1o2EIntersection.contains(ev)) {
+                                        Transition tr = new Transition(new State(o1.getStates().get(i).getState() + "&"
+                                                + o2.getStates().get(j).getState()),
+                                                new Event(ev),
+                                                new State(o1.getStates().get(k).getState() + "&" + o2.getStates().get(h).getState()));
+                                        System.out.println("*" + tr.getTransitionStr());
+                                        ocomp.getTransitions().add(tr);
+
+                                    }
+                                }
+                            } else if ((j != h) && (i != k)) {
+
+                                for (String ev : o1Eset) {
+                                    if (o1o2EIntersection.contains(ev)) {
+                                        Transition tr = new Transition(new State(o1.getStates().get(i).getState() + "&"
+                                                + o2.getStates().get(j).getState()),
+                                                new Event(ev),
+                                                new State(o1.getStates().get(k).getState() + "&" + o2.getStates().get(h).getState()));
+                                        System.out.println("*" + tr.getTransitionStr());
+                                        ocomp.getTransitions().add(tr);
+
+                                    }
+                                }
+                                for (String ev : o2Eset) {
+                                    if (o1o2EIntersection.contains(ev)) {
+                                        Transition tr = new Transition(new State(o1.getStates().get(i).getState() + "&"
+                                                + o2.getStates().get(j).getState()),
+                                                new Event(ev),
+                                                new State(o1.getStates().get(k).getState() + "&" + o2.getStates().get(h).getState()));
+                                        System.out.println("*" + tr.getTransitionStr());
+                                        ocomp.getTransitions().add(tr);
+
+                                    }
+                                }
+
+                            }
+
                         }
                     }
                 }
             }
         }
-        return ocom;
+        return ocomp;
 
     }
 
-    public static void weaveTracesFromObjects(Model model) {
+    //   public static void weaveTracesFromObjects(Model model) {
 //        ArrayList<Behaviour> protocolMachines = new ArrayList<>();
 //        protocolMachines.addAll(model.objects);
 //        protocolMachines.addAll(model.behaviours);
-        //Put each object&behaviour into initial state & make a list of model event names
+    //Put each object&behaviour into initial state & make a list of model event names
 //        for (Behaviour pm : protocolMachines) {
 //            pm.setCurrentState("@new");
 //            System.out.println(pm.getModelElementName() + "  state=" + pm.getCurrentState());
@@ -162,86 +216,84 @@ public class OBTraceMaker {
 //        }
 //
 //        makeTraceForAllowedEvents(model, protocolMachines, model.getEventNames());
-    }
-
-    private static void weaveTracesWith(Model model, Behaviour objectORbehaviour) {
-        String[] otransitions = null;
-        String[] mtransitions = null;
-        String A = null;
-        String B = null;
-        boolean sequenceCut;
-        int counter = 0;
-        for (String mtrace : model.traces) {//For each model trace
-            int modelTraceIndex = model.traces.indexOf(mtrace);
-            mtransitions = splitTrace(mtrace);
-//            for (int k = 0; k < mtransitions.length; k++) {
-//                System.out.println(mtransitions[k]);
-//            }
-            for (String otrace : objectORbehaviour.getTraces()) {//for each object trace
-                otransitions = splitTrace(otrace);
-//                for (int k = 0; k < otransitions.length; k++) {
-//                    System.out.println(otransitions[k]);
+//    }
+//    private static void weaveTracesWith(Model model, Behaviour objectORbehaviour) {
+//        String[] otransitions = null;
+//        String[] mtransitions = null;
+//        String A = null;
+//        String B = null;
+//        boolean sequenceCut;
+//        int counter = 0;
+//        for (String mtrace : model.traces) {//For each model trace
+//            int modelTraceIndex = model.traces.indexOf(mtrace);
+//            mtransitions = splitTrace(mtrace);
+////            for (int k = 0; k < mtransitions.length; k++) {
+////                System.out.println(mtransitions[k]);
+////            }
+//            for (String otrace : objectORbehaviour.getTraces()) {//for each object trace
+//                otransitions = splitTrace(otrace);
+////                for (int k = 0; k < otransitions.length; k++) {
+////                    System.out.println(otransitions[k]);
+////                }
+//
+//                int mt = 0;
+//                int ot = 0;
+//                System.out.println("==== weaving #" + ++counter);
+//                System.out.println("TS: " + mtrace);
+//                System.out.println("Ti: " + otrace);
+//                do { //do weawing
+//                    sequenceCut = false;
+//                    A = ParseModel.getEvent(mtransitions[mt]);
+//                    B = ParseModel.getEvent(otransitions[ot]);
+////                    System.out.println("System event: " + A + " Object event: " + B);
+//                    if (A.equals(B)) { //A = B
+//                        mtransitions[mt] = doBeforeStateConcat(mtransitions[mt], ParseModel.beforeState(otransitions[ot]));
+//                        mtransitions[mt] = doAfterStateConcat(mtransitions[mt], ParseModel.afterState(otransitions[ot]));
+//                        //                       System.out.println("woven transition: " + mtransitions[mt]);
+//                        //                       System.out.println("case System event = Object event");
+//                        mt++;
+//                        ot++;
+//                    } else {//A != B
+//                        //                       System.out.println("case System event != Object event");
+//                        if (!ParsingUtilities.getDuplicateArrayListElements(model.getEventNames(), objectORbehaviour.getBEEventNames()).contains(A)) {//A is NOT there
+//                            //                           System.out.println(A + " is NOT in Es AND Ei");
+//                            //                           if (ParsingUtilities.getDuplicateArrayListElements(model.getEventNames(), objectORbehaviour.getBEEventNames()).contains(B)) { //B is there
+//                            //                           System.out.println(B + " IS in Es AND Ei");
+//                            mtransitions[mt] = doBeforeStateConcat(mtransitions[mt], ParseModel.beforeState(otransitions[ot]));
+//                            mtransitions[mt] = doAfterStateConcat(mtransitions[mt], ParseModel.beforeState(otransitions[ot]));
+//                            mt++;
+//                            //                           }
+//                        } else {//A IS there
+////                            System.out.println(A + " IS  in Es AND Ei");
+//                            if (ParsingUtilities.getDuplicateArrayListElements(model.getEventNames(), objectORbehaviour.getBEEventNames()).contains(B)) { //B is there
+//                                System.out.println("SequenceCut here"); //deadlock  
+//                                sequenceCut = true;
+//                                break;
+//                            } else {//B is NOT there
+//                                //                               System.out.println(B + " IS NOT in Es AND Ei");
+//                                mtransitions[mt] = doTrReplaceAndAdd(mtransitions[mt], otransitions[ot]);
+////                                System.out.println("woven transition: " + mtransitions[mt]);
+//                                ot++;
+//                            }
+//                        }
+//                    }
+//                } while ((mt < mtransitions.length) && (ot < otransitions.length));
+//                mtrace = glueTrace(mtransitions, 0);
+//
+////                System.out.println("glued: " + mtrace);
+//                if ((!sequenceCut) && (ot < otransitions.length) && !ParsingUtilities.getDuplicateArrayListElements(model.getEventNames(), objectORbehaviour.getBEEventNames()).contains(B)) {
+//                    //TConactenate mtrasitions with the rest of otranstions;
+//                    //            otrace = glueTrace(otransitions,0);
+//                    mtrace = mtrace.replaceAll("\\|", "") /*it's not the termination yet*/ + glueTrace(otransitions, ot);
+////                    System.out.println("with tail: " + mtrace);
 //                }
-
-                int mt = 0;
-                int ot = 0;
-                System.out.println("==== weaving #" + ++counter);
-                System.out.println("TS: " + mtrace);
-                System.out.println("Ti: " + otrace);
-                do { //do weawing
-                    sequenceCut = false;
-                    A = ParseModel.getEvent(mtransitions[mt]);
-                    B = ParseModel.getEvent(otransitions[ot]);
-//                    System.out.println("System event: " + A + " Object event: " + B);
-                    if (A.equals(B)) { //A = B
-                        mtransitions[mt] = doBeforeStateConcat(mtransitions[mt], ParseModel.beforeState(otransitions[ot]));
-                        mtransitions[mt] = doAfterStateConcat(mtransitions[mt], ParseModel.afterState(otransitions[ot]));
-                        //                       System.out.println("woven transition: " + mtransitions[mt]);
-                        //                       System.out.println("case System event = Object event");
-                        mt++;
-                        ot++;
-                    } else {//A != B
-                        //                       System.out.println("case System event != Object event");
-                        if (!ParsingUtilities.getDuplicateArrayListElements(model.getEventNames(), objectORbehaviour.getBEEventNames()).contains(A)) {//A is NOT there
-                            //                           System.out.println(A + " is NOT in Es AND Ei");
-                            //                           if (ParsingUtilities.getDuplicateArrayListElements(model.getEventNames(), objectORbehaviour.getBEEventNames()).contains(B)) { //B is there
-                            //                           System.out.println(B + " IS in Es AND Ei");
-                            mtransitions[mt] = doBeforeStateConcat(mtransitions[mt], ParseModel.beforeState(otransitions[ot]));
-                            mtransitions[mt] = doAfterStateConcat(mtransitions[mt], ParseModel.beforeState(otransitions[ot]));
-                            mt++;
-                            //                           }
-                        } else {//A IS there
-//                            System.out.println(A + " IS  in Es AND Ei");
-                            if (ParsingUtilities.getDuplicateArrayListElements(model.getEventNames(), objectORbehaviour.getBEEventNames()).contains(B)) { //B is there
-                                System.out.println("SequenceCut here"); //deadlock  
-                                sequenceCut = true;
-                                break;
-                            } else {//B is NOT there
-                                //                               System.out.println(B + " IS NOT in Es AND Ei");
-                                mtransitions[mt] = doTrReplaceAndAdd(mtransitions[mt], otransitions[ot]);
-//                                System.out.println("woven transition: " + mtransitions[mt]);
-                                ot++;
-                            }
-                        }
-                    }
-                } while ((mt < mtransitions.length) && (ot < otransitions.length));
-                mtrace = glueTrace(mtransitions, 0);
-
-//                System.out.println("glued: " + mtrace);
-                if ((!sequenceCut) && (ot < otransitions.length) && !ParsingUtilities.getDuplicateArrayListElements(model.getEventNames(), objectORbehaviour.getBEEventNames()).contains(B)) {
-                    //TConactenate mtrasitions with the rest of otranstions;
-                    //            otrace = glueTrace(otransitions,0);
-                    mtrace = mtrace.replaceAll("\\|", "") /*it's not the termination yet*/ + glueTrace(otransitions, ot);
-//                    System.out.println("with tail: " + mtrace);
-                }
-                System.out.println("glued at #" + counter + ": " + mtrace);
-                model.traces.set(modelTraceIndex, mtrace);
-
-            }
-        }
-
-    }
-
+//                System.out.println("glued at #" + counter + ": " + mtrace);
+//                model.traces.set(modelTraceIndex, mtrace);
+//
+//            }
+//        }
+//
+//    }
     private static String[] splitTrace(String trace) {
         if (trace.contains("-->")) {
             trace = trace.replace("-->", ">");
@@ -337,5 +389,17 @@ public class OBTraceMaker {
 
     private static ArrayList<String> unionOfEvents(Behaviour be1, Behaviour be2) {
         return ParsingUtilities.getUnionOfArrayListElements(be1.getBEEventNames(), be2.getBEEventNames());
+    }
+
+    private static ArrayList<String> getEventsForBeforeAndAfterStates(Behaviour o, State beginst, State endst) {
+        ArrayList<String> events = new ArrayList<>();
+
+        for (Transition tr : o.getTransitions()) {
+            System.out.println("beg " + beginst.getState() + " end " + endst.getState() + " tr " + tr.getTransitionStr());
+            if (tr.getBeforeState().getState().equals(beginst.getState()) && tr.getAfterState().getState().equals(endst.getState())) {
+                events.add(tr.getAction().getAction());
+            }
+        }
+        return events;
     }
 }

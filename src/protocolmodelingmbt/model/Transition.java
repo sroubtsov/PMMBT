@@ -1,9 +1,12 @@
-package protocolmodelingmbt.model; 
+package protocolmodelingmbt.model;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
+import protocolmodelingmbt.parser.Grammar;
+import protocolmodelingmbt.parser.ParsingUtilities;
 
-public class Transition{
+public class Transition {
+
     private State beforeState;
     private Event action;
 
@@ -25,18 +28,16 @@ public class Transition{
         this.action = action;
         this.afterState = afterState;
     }
-    
-    public String getTransitionStr(){
+
+    public String getTransitionStr() {
         return this.getBeforeState().getState() + "*" + this.getAction().getAction() + "=" + this.getAfterState().getState();
     }
-    
-    public void writeTransition(){
+
+    public void writeTransition() {
         System.out.println(this.getBeforeState().getState() + "*" + this.getAction().getAction() + "=" + this.getAfterState().getState());
     }
-    public void writeTransition(BufferedWriter out) throws IOException{
+
+    public void writeTransition(BufferedWriter out) throws IOException {
         out.write(this.getBeforeState().getState() + "*" + this.getAction().getAction() + "=" + this.getAfterState().getState() + "\n");
     }
-
-
-
 }

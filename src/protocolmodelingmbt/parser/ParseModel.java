@@ -234,7 +234,7 @@ public class ParseModel {
                     String[] states = ParsingUtilities.parseMSelement(currentline, ",");
                     object.getStates().add(new State(object.getName() + "."  + "@new"));
                     for (int j = 0; j < states.length; j++) {
-                        System.out.println("state  " + j + " " + object.getName() + "."  + states[j]);
+     //                   System.out.println("state  " + j + " " + object.getName() + "."  + states[j]);
                         object.getStates().add(new State(object.getName() + "."  + states[j]));
                     }
                 }
@@ -254,7 +254,9 @@ public class ParseModel {
                     String[] transitions = ParsingUtilities.parseMSelement(currentline, ",");
                     for (int j = 0; j < transitions.length; j++) {
                         String[] tokens = ParsingUtilities.parseMSelement(transitions[j], "[*=]");
-                        object.getTransitions().add(new Transition(new State(tokens[0]), new Event(tokens[1]), new State(tokens[2])));
+                        object.getTransitions().add(new Transition(new State(object.getName() + "." + tokens[0]), 
+                                new Event(tokens[1]), 
+                                new State(object.getName() + "." + tokens[2])));
                     }
 
                 }
@@ -307,7 +309,8 @@ public class ParseModel {
                     String[] transitions = ParsingUtilities.parseMSelement(currentline, ",");
                     for (int j = 0; j < transitions.length; j++) {
                         String[] tokens = ParsingUtilities.parseMSelement(transitions[j], "[*=]");
-                        behaviour.getTransitions().add(new Transition(new State(tokens[0]), new Event(tokens[1]), new State(tokens[2])));
+                        behaviour.getTransitions().add(new Transition(new State(ParsingUtilities.parseMSname(Grammar.BEHAVIOUR, behaviour.getModelElementName()) + "." + tokens[0]), 
+                                new Event(tokens[1]), new State(ParsingUtilities.parseMSname(Grammar.BEHAVIOUR, behaviour.getModelElementName()) + "." + tokens[2])));
                     }
 
                 }

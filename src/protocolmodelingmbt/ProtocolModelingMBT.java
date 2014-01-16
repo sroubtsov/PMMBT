@@ -8,6 +8,7 @@ import protocolmodelingmbt.parser.ParseModel;
 import java.util.ArrayList;
 import protocolmodelingmbt.model.Behaviour;
 import protocolmodelingmbt.model.Model;
+import protocolmodelingmbt.model.Transition;
 import protocolmodelingmbt.model._Object;
 import protocolmodelingmbt.testmaker.OBTraceMaker;
 
@@ -52,10 +53,15 @@ public class ProtocolModelingMBT {
         } 
         //OBTraceMaker.makeModeltraces(model);
         // NEW algorithm 
-        OBTraceMaker.weaveTracesFromObjects(model);
-        for(String trace: model.traces){
-            System.out.println(trace);
+        //OBTraceMaker.weaveTracesFromObjects(model);
+        Behaviour ocomp= OBTraceMaker.buildCSPComposition(model.objects.get(0), model.objects.get(1));
+        for(Transition  tr: ocomp.getTransitions()){
+            System.out.println(tr.getTransitionStr());
         }
+        
+//        for(String trace: model.traces){
+//            System.out.println(trace);
+//        }
         
         if ((args.length > 1)) {
            // WriteTestScripts.writeTestScripts(args[1],traces);
