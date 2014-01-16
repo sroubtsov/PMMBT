@@ -1,8 +1,11 @@
 package protocolmodelingmbt.testmaker;
 
 import java.util.ArrayList;
+import protocolmodelingmbt.model.Attribute;
 import protocolmodelingmbt.model.Behaviour;
 import protocolmodelingmbt.model.Model;
+import protocolmodelingmbt.model.State;
+import protocolmodelingmbt.model.Transition;
 import protocolmodelingmbt.model._Object;
 import protocolmodelingmbt.parser.Grammar;
 import protocolmodelingmbt.parser.ParseModel;
@@ -128,19 +131,37 @@ public class OBTraceMaker {
         return afterState;
     }
 
-    public static void weaveTracesFromObjects(Model model) {
-        ArrayList<Behaviour> protocolMachines = new ArrayList<>();
-        protocolMachines.addAll(model.objects);
-        protocolMachines.addAll(model.behaviours);
-        //Put each object&behaviour into initial state & make a list of model event names
-        for (Behaviour pm : protocolMachines) {
-            pm.setCurrentState("@new");
-            System.out.println(pm.getModelElementName() + "  state=" + pm.getCurrentState());
-            model.getEventNames().addAll(ParsingUtilities.getUniqueArrayListElements(model.getEventNames(), pm.getBEEventNames()));
+    public static Behaviour buildCSPComposition(Behaviour o1, Behaviour o2) {
+        Behaviour ocom;
+        ArrayList<Transition> ocomtransitions = new ArrayList<Transition>();//emptuy in the beginning
+        ocom = new Behaviour(new ArrayList<Attribute>(), CartesianProductOfStates(o1, o2),ocomtransitions);
+        for (int i = 0; i< o1.getStates().size(); i++){
+            for (int j = 0; j< o2.getStates().size(); j++){
+                for (int k = 0; k< o1.getStates().size(); k++){
+                    for (int h = 0; h< o1.getStates().size(); h++){
+                        for(String ev: ParsingUtilities.getDuplicateArrayListElements(o1.getBEEventNames(),o2.getBEEventNames()))  {
+                            
+                        }
+                    }
+                }
+            }
         }
+        return ocom;
 
-        makeTraceForAllowedEvents(model, protocolMachines, model.getEventNames());
+    }
 
+    public static void weaveTracesFromObjects(Model model) {
+//        ArrayList<Behaviour> protocolMachines = new ArrayList<>();
+//        protocolMachines.addAll(model.objects);
+//        protocolMachines.addAll(model.behaviours);
+        //Put each object&behaviour into initial state & make a list of model event names
+//        for (Behaviour pm : protocolMachines) {
+//            pm.setCurrentState("@new");
+//            System.out.println(pm.getModelElementName() + "  state=" + pm.getCurrentState());
+//            model.getEventNames().addAll(ParsingUtilities.getUniqueArrayListElements(model.getEventNames(), pm.getBEEventNames()));
+//        }
+//
+//        makeTraceForAllowedEvents(model, protocolMachines, model.getEventNames());
     }
 
     private static void weaveTracesWith(Model model, Behaviour objectORbehaviour) {
@@ -296,5 +317,21 @@ public class OBTraceMaker {
         newmtransition = newmtransition + "-->" + insmttransition;
         //      System.out.println("become "+newmtransition);
         return newmtransition;
+    }
+
+    private static ArrayList<State> CartesianProductOfStates(Behaviour be1, Behaviour be2) {
+        ArrayList<State> stcartproduct = new ArrayList<>();
+        int i = 0;
+        for (State st1 : be1.getStates()) {
+            for (State st2 : be2.getStates()) {
+                stcartproduct.add(new State(st1.getState() + "&" + st2.getState()));
+                System.out.println(stcartproduct.get(i++).getState());
+            }
+        }
+        return stcartproduct;
+    }
+
+    private static ArrayList<String> IntersectionOfEvents(Behaviour be1, Behaviour be2) {
+        return ParsingUtilities.getDuplicateArrayListElements(be1.getBEEventNames(), be2.getBEEventNames());
     }
 }

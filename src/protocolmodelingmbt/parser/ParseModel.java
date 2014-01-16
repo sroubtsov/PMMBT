@@ -232,9 +232,10 @@ public class ParseModel {
                 currentline = ParsingUtilities.parseMSname(Grammar.STATES, ob.get(i));
                 if (!currentline.isEmpty()) {
                     String[] states = ParsingUtilities.parseMSelement(currentline, ",");
+                    object.getStates().add(new State(object.getName() + "."  + "@new"));
                     for (int j = 0; j < states.length; j++) {
-//                        System.out.println("state  " + j + " " + states[j]);
-                        object.getStates().add(new State(states[j]));
+                        System.out.println("state  " + j + " " + object.getName() + "."  + states[j]);
+                        object.getStates().add(new State(object.getName() + "."  + states[j]));
                     }
                 }
             } else if (parsestate == PARSESTATE.include) {
@@ -296,7 +297,7 @@ public class ParseModel {
                     String[] states = ParsingUtilities.parseMSelement(currentline, ",");
                     for (int j = 0; j < states.length; j++) {
                         //                      System.out.println("state  " + j + " " + states[j]);
-                        behaviour.getStates().add(new State(states[j]));
+                        behaviour.getStates().add(new State(ParsingUtilities.parseMSname(Grammar.BEHAVIOUR, behaviour.getModelElementName()) + "." + states[j]));
                     }
                 }
 

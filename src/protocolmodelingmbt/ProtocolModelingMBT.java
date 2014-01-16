@@ -50,8 +50,9 @@ public class ProtocolModelingMBT {
 //            
             be.writeTraces();
         } 
-        OBTraceMaker.makeModeltraces(model);
-        // NEW algorithm OBTraceMaker.weaveTracesFromObjects(model);
+        //OBTraceMaker.makeModeltraces(model);
+        // NEW algorithm 
+        OBTraceMaker.weaveTracesFromObjects(model);
         for(String trace: model.traces){
             System.out.println(trace);
         }
