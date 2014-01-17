@@ -36,10 +36,10 @@ public class OBTraceMaker {
         String transition = "";
         for (int i = 0; i < behaviour.getTransitions().size(); i++) {
             transition = /*ParsingUtilities.parseMSname(Grammar.BEHAVIOUR, behaviour.getModelElementName()) + "."
-                    + */behaviour.getTransitions().get(i).getBeforeState().getState() + "*"
+                     + */ behaviour.getTransitions().get(i).getBeforeState().getState() + "*"
                     + behaviour.getTransitions().get(i).getAction().getAction() + "="
                     + /*ParsingUtilities.parseMSname(Grammar.BEHAVIOUR, behaviour.getModelElementName()) + "."
-                    + */behaviour.getTransitions().get(i).getAfterState().getState();
+                     + */ behaviour.getTransitions().get(i).getAfterState().getState();
 
             //getTransitionStr();
             behaviour.getTraces().add(transition);
@@ -137,79 +137,59 @@ public class OBTraceMaker {
         System.out.println("=== start ===");
         ArrayList<String> o1o2EIntersection = ParsingUtilities.getDuplicateArrayListElements(o1.getBEEventNames(), o2.getBEEventNames());
         for (int i = 0; i < o1o2EIntersection.size(); i++) {
-            System.out.println(" intersection " + i + " "+ o1o2EIntersection.get(i));
+            System.out.println(" intersection " + i + " " + o1o2EIntersection.get(i));
         }
         for (int i = 0; i < o1.getStates().size(); i++) {
             for (int j = 0; j < o2.getStates().size(); j++) {
                 for (int k = 0; k < o1.getStates().size(); k++) {
                     for (int h = 0; h < o2.getStates().size(); h++) {
-                        System.out.println(" i =" + i + " j =" + j + " k =" + k + " h =" + h);
-                        System.out.println("before: " + o1.getStates().get(i).getState() + o2.getStates().get(j).getState() + " after: " + o1.getStates().get(k).getState() + o2.getStates().get(h).getState());
+    //                    System.out.println(" i =" + i + " j =" + j + " k =" + k + " h =" + h);
+    //                    System.out.println("before: " + o1.getStates().get(i).getState() + o2.getStates().get(j).getState() + " after: " + o1.getStates().get(k).getState() + o2.getStates().get(h).getState());
                         ArrayList<String> o1Eset = getEventsForBeforeAndAfterStates(o1, o1.getStates().get(i), o1.getStates().get(k));
                         ArrayList<String> o2Eset = getEventsForBeforeAndAfterStates(o2, o2.getStates().get(j), o2.getStates().get(h));
                         //System.out.println("o1:");
                         for (String ev : o1Eset) {
-                            System.out.println(o1.getStates().get(i).getState() +"*"+ev + "="+ o1.getStates().get(k).getState() + " i =" +i+ " j =" +j+ " k =" +k+ " h =" +h);                        
+    //                        System.out.println(o1.getStates().get(i).getState() + "*" + ev + "=" + o1.getStates().get(k).getState() + " i =" + i + " j =" + j + " k =" + k + " h =" + h);
                         }
                         //System.out.println("o2:");
                         for (String ev : o2Eset) {
-                            System.out.println(o2.getStates().get(j).getState() +"*"+ev + "="+ o2.getStates().get(h).getState() + " i =" +i+ " j =" +j+ " k =" +k+ " h =" +h);                        
+   //                         System.out.println(o2.getStates().get(j).getState() + "*" + ev + "=" + o2.getStates().get(h).getState() + " i =" + i + " j =" + j + " k =" + k + " h =" + h);
                         }
 
                         //System.out.println("o1E size = " + o1Eset.size() + " o2E size = " + o2Eset.size());
-                        if ((o2.getStates().get(j) == o2.getStates().get(h)) && !o1Eset.isEmpty()
-                                || (o1.getStates().get(i) == o1.getStates().get(k)) && !o2Eset.isEmpty()
-                                || ((o2.getStates().get(j) != o2.getStates().get(h)) && (o1.getStates().get(i) != o1.getStates().get(k)) && !o1Eset.isEmpty() && !o2Eset.isEmpty())) {
-                            if (o2.getStates().get(j) == o2.getStates().get(h)) {
-                                for (String ev : o1Eset) {
-                                    if (!o1o2EIntersection.contains(ev)) {
-                                        Transition tr = new Transition(new State(o1.getStates().get(i).getState() + "&"
-                                                + o2.getStates().get(j).getState()),
-                                                new Event(ev),
-                                                new State(o1.getStates().get(k).getState() + "&" + o2.getStates().get(h).getState()));
-                                        //System.out.println("*" + tr.getTransitionStr());
-                                        ocomp.getTransitions().add(tr);
-                                    }
+                        if (!o1Eset.isEmpty() && !o2Eset.isEmpty()) {
+                            for (String ev : ParsingUtilities.getDuplicateArrayListElements(o1Eset, o2Eset)) {
+                                if (o1o2EIntersection.contains(ev)) {
+                                    Transition tr = new Transition(new State(o1.getStates().get(i).getState() + "&"
+                                            + o2.getStates().get(j).getState()),
+                                            new Event(ev),
+                                            new State(o1.getStates().get(k).getState() + "&" + o2.getStates().get(h).getState()));
+                                    System.out.println("case 1 " + tr.getTransitionStr());
+                                    ocomp.getTransitions().add(tr);
                                 }
-                            } else if (o1.getStates().get(i) == o1.getStates().get(k)) {
-                                for (String ev : o2Eset) {
-                                    if (!o1o2EIntersection.contains(ev)) {
-                                        Transition tr = new Transition(new State(o1.getStates().get(i).getState() + "&"
-                                                + o2.getStates().get(j).getState()),
-                                                new Event(ev),
-                                                new State(o1.getStates().get(k).getState() + "&" + o2.getStates().get(h).getState()));
-                                        //System.out.println("*" + tr.getTransitionStr());
-                                        ocomp.getTransitions().add(tr);
-
-                                    }
-                                }
-                            } else if (((o2.getStates().get(j) != o2.getStates().get(h)) && (o1.getStates().get(i) != o1.getStates().get(k)))) {
-System.out.println(" case 3");
-                                for (String ev : ParsingUtilities.getDuplicateArrayListElements(o1Eset, o2Eset)) {
-                                    if (o1o2EIntersection.contains(ev)) {
-                                        Transition tr = new Transition(new State(o1.getStates().get(i).getState() + "&"
-                                                + o2.getStates().get(j).getState()),
-                                                new Event(ev),
-                                                new State(o1.getStates().get(k).getState() + "&" + o2.getStates().get(h).getState()));
-                                        // System.out.println("*" + tr.getTransitionStr());
-                                        ocomp.getTransitions().add(tr);
-
-                                    }
-                                }
-//                                for (String ev : o2Eset) {
-//                                    if (o1o2EIntersection.contains(ev)) {
-//                                        Transition tr = new Transition(new State(o1.getStates().get(i).getState() + "&"
-//                                                + o2.getStates().get(j).getState()),
-//                                                new Event(ev),
-//                                                new State(o1.getStates().get(k).getState() + "&" + o2.getStates().get(h).getState()));
-//                                        System.out.println("*" + tr.getTransitionStr());
-//                                        ocomp.getTransitions().add(tr);
-//
-//                                    }
-//                                }
-
                             }
-
+                        } else if (!o1Eset.isEmpty() && o2Eset.isEmpty()) {
+                            for (String ev : o1Eset) {
+                                if (!o1o2EIntersection.contains(ev)) {
+                                    Transition tr = new Transition(new State(o1.getStates().get(i).getState() + "&"
+                                            + o2.getStates().get(j).getState()),
+                                            new Event(ev),
+                                            new State(o1.getStates().get(k).getState() + "&" + o2.getStates().get(h).getState()));
+                                    System.out.println("case 2 " + tr.getTransitionStr());
+                                    ocomp.getTransitions().add(tr);
+                                }
+                            }
+                        } else if (o1Eset.isEmpty() && !o2Eset.isEmpty()) {
+                            for (String ev : o2Eset) {
+                                if (!o1o2EIntersection.contains(ev)) {
+                                    Transition tr = new Transition(new State(o1.getStates().get(i).getState() + "&"
+                                            + o2.getStates().get(j).getState()),
+                                            new Event(ev),
+                                            new State(o1.getStates().get(k).getState() + "&" + o2.getStates().get(h).getState()));
+                                    System.out.println("case 3 " + tr.getTransitionStr());
+                                    ocomp.getTransitions().add(tr);
+                                }
+                            }
                         }
                     }
                 }
