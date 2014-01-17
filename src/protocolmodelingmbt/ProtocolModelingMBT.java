@@ -59,8 +59,8 @@ public class ProtocolModelingMBT {
         for(Transition  tr: ocomp.getTransitions()){
             System.out.println(tr.getTransitionStr());
         }
-//        OBTraceMaker.makeBEtraces(ocomp);
-//        ocomp.writeTraces();
+        OBTraceMaker.makeOBtraces(ocomp);
+        ocomp.writeTraces();
 //        for(String trace: model.traces){
 //            System.out.println(trace);
 //        }

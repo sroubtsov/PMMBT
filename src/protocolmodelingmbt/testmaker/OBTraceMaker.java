@@ -15,7 +15,7 @@ import protocolmodelingmbt.parser.TransitionNode;
 
 public class OBTraceMaker {
 
-    public static void makeOBtraces(_Object object) {
+    public static void makeOBtraces(Behaviour object) {
         //    ArrayList<String> traces = new ArrayList();
 
         for (int i = 0; i < object.getTransitions().size(); i++) {
@@ -23,13 +23,26 @@ public class OBTraceMaker {
             String path = "";
 
             //           System.out.println(" be " + behaviour.getTransitions().get(i).getBeforeState().getState());
-            if (object.getTransitions().get(i).getBeforeState().getState().equals("@new")) {
+            if (stateContainsOnly(object.getTransitions().get(i).getBeforeState().getState(), "@new")) {
                 TransitionNode root = new TransitionNode("@new", transition, object.getTransitionStrings());
                 traverse(root, object, path);
                 break;
             }
         }
         //  object.getTraces().addAll(traces);
+    }
+
+    private static boolean stateContainsOnly(String state, String subst) {
+        boolean only = true;
+        String[] states = state.split("&");
+        for (int i = 0; i < states.length; i++) {
+            System.out.println("------->" + states[i]);
+            if (!states[i].contains(subst)) {
+                only = false;
+                return only;
+            }
+        }
+        return only;
     }
 
     public static void makeBEtraces(Behaviour behaviour) {
@@ -143,17 +156,17 @@ public class OBTraceMaker {
             for (int j = 0; j < o2.getStates().size(); j++) {
                 for (int k = 0; k < o1.getStates().size(); k++) {
                     for (int h = 0; h < o2.getStates().size(); h++) {
-    //                    System.out.println(" i =" + i + " j =" + j + " k =" + k + " h =" + h);
-    //                    System.out.println("before: " + o1.getStates().get(i).getState() + o2.getStates().get(j).getState() + " after: " + o1.getStates().get(k).getState() + o2.getStates().get(h).getState());
+                        //                    System.out.println(" i =" + i + " j =" + j + " k =" + k + " h =" + h);
+                        //                    System.out.println("before: " + o1.getStates().get(i).getState() + o2.getStates().get(j).getState() + " after: " + o1.getStates().get(k).getState() + o2.getStates().get(h).getState());
                         ArrayList<String> o1Eset = getEventsForBeforeAndAfterStates(o1, o1.getStates().get(i), o1.getStates().get(k));
                         ArrayList<String> o2Eset = getEventsForBeforeAndAfterStates(o2, o2.getStates().get(j), o2.getStates().get(h));
                         //System.out.println("o1:");
                         for (String ev : o1Eset) {
-    //                        System.out.println(o1.getStates().get(i).getState() + "*" + ev + "=" + o1.getStates().get(k).getState() + " i =" + i + " j =" + j + " k =" + k + " h =" + h);
+                            //                        System.out.println(o1.getStates().get(i).getState() + "*" + ev + "=" + o1.getStates().get(k).getState() + " i =" + i + " j =" + j + " k =" + k + " h =" + h);
                         }
                         //System.out.println("o2:");
                         for (String ev : o2Eset) {
-   //                         System.out.println(o2.getStates().get(j).getState() + "*" + ev + "=" + o2.getStates().get(h).getState() + " i =" + i + " j =" + j + " k =" + k + " h =" + h);
+                            //                         System.out.println(o2.getStates().get(j).getState() + "*" + ev + "=" + o2.getStates().get(h).getState() + " i =" + i + " j =" + j + " k =" + k + " h =" + h);
                         }
 
                         //System.out.println("o1E size = " + o1Eset.size() + " o2E size = " + o2Eset.size());
