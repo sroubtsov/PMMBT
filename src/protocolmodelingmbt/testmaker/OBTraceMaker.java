@@ -181,7 +181,7 @@ public class OBTraceMaker {
                                     ocomp.getTransitions().add(tr);
                                 }
                             }
-                        } else if (!o1Eset.isEmpty() && o2Eset.isEmpty()) {
+                        } else if (!o1Eset.isEmpty() && (o2.getStates().get(j) == o2.getStates().get(h) && o2Eset.isEmpty())) {
                             for (String ev : o1Eset) {
                                 if (!o1o2EIntersection.contains(ev)) {
                                     Transition tr = new Transition(new State(o1.getStates().get(i).getState() + "&"
@@ -192,7 +192,7 @@ public class OBTraceMaker {
                                     ocomp.getTransitions().add(tr);
                                 }
                             }
-                        } else if (o1Eset.isEmpty() && !o2Eset.isEmpty()) {
+                        } else if (!o2Eset.isEmpty() && (o1.getStates().get(i) == o1.getStates().get(k)) && o1Eset.isEmpty()) {
                             for (String ev : o2Eset) {
                                 if (!o1o2EIntersection.contains(ev)) {
                                     Transition tr = new Transition(new State(o1.getStates().get(i).getState() + "&"
@@ -203,11 +203,11 @@ public class OBTraceMaker {
                                     ocomp.getTransitions().add(tr);
                                 }
                             }
-                        }
-                    }
-                }
-            }
-        }
+                        }//<====
+                    }//for h
+                }//for k
+            }//for j
+        }//for i
         return ocomp;
 
     }
