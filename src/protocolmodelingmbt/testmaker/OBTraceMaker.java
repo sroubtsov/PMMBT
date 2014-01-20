@@ -20,13 +20,14 @@ public class OBTraceMaker {
 
         for (int i = 0; i < object.getTransitions().size(); i++) {
             String transition = object.getTransitions().get(i).getTransitionStr();
+            
             String path = "";
 
             //           System.out.println(" be " + behaviour.getTransitions().get(i).getBeforeState().getState());
-            if (stateContainsOnly(object.getTransitions().get(i).getBeforeState().getState(), "@new")) {
-                TransitionNode root = new TransitionNode("@new", transition, object.getTransitionStrings());
+            if (/*object.getTransitions().get(i).getBeforeState().getState().contains("@new")*/stateContainsOnly(object.getTransitions().get(i).getBeforeState().getState(), "@new")) {
+                TransitionNode root = new TransitionNode(object.getTransitions().get(i).getBeforeState().getState(), transition, object.getTransitionStrings());
                 traverse(root, object, path);
-                break;
+                //break;
             }
         }
         //  object.getTraces().addAll(traces);
@@ -36,7 +37,6 @@ public class OBTraceMaker {
         boolean only = true;
         String[] states = state.split("&");
         for (int i = 0; i < states.length; i++) {
-            System.out.println("------->" + states[i]);
             if (!states[i].contains(subst)) {
                 only = false;
                 return only;
@@ -147,6 +147,7 @@ public class OBTraceMaker {
     public static Behaviour buildCSPComposition(Behaviour o1, Behaviour o2) {
         Behaviour ocomp;
         ocomp = new Behaviour(new ArrayList<Attribute>(), new ArrayList<State>(), new ArrayList<Transition>());
+        ocomp.setModelElementName(o1.getModelElementName() + "&" + o2.getModelElementName());
         System.out.println("=== start ===");
         ArrayList<String> o1o2EIntersection = ParsingUtilities.getDuplicateArrayListElements(o1.getBEEventNames(), o2.getBEEventNames());
         for (int i = 0; i < o1o2EIntersection.size(); i++) {
@@ -335,7 +336,7 @@ public class OBTraceMaker {
         if (root.getChildren().isEmpty()) {
             path += "|";
             behaviour.getTraces().add(path);
-            //       System.out.println("path " + path);
+    //               System.out.println("path " + path);
         }
     }
 

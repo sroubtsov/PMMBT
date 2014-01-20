@@ -58,6 +58,6 @@ public class TransitionNode {
     
     
     public String getTransitionValues(Behaviour behaviour){
-        return ParsingUtilities.parseMSname(Grammar.OBJECT,behaviour.getModelElementName())+ "." + this.beforeState.getState() + "*" + this.action.getAction() + "=" + ParsingUtilities.parseMSname(Grammar.OBJECT,(behaviour.getModelElementName()))+ "." + this.afterState.getState();
+        return this.beforeState.getState() + "*" + this.action.getAction() + "=" + this.afterState.getState();
     }
 }
