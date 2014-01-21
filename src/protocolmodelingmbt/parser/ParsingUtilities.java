@@ -105,12 +105,13 @@ public class ParsingUtilities {
     public static ArrayList<String> getUnionOfArrayListElements(ArrayList<String> hostList/*model*/, ArrayList<String> guestList/*object*/) {
         ArrayList<String> duplicates = new ArrayList<>();
         duplicates.addAll(hostList);
+        duplicates.addAll(guestList);
         for (String item : guestList) {
             if (hostList.contains(item)) {
-                guestList.remove(item);
+                duplicates.remove(item);
             }
         }
-        duplicates.addAll(guestList);
+        
         return duplicates;
     }
 }

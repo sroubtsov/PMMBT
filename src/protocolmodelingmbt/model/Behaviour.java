@@ -54,7 +54,16 @@ public class Behaviour extends ModelElement {
         }
         return transitionStrs;
     }
-
+    
+    public ArrayList<String> getstateNames(){
+        ArrayList<String> stateStrs = new ArrayList<>();
+        for(State st: this.states){
+            stateStrs.add(st.getState());
+        }
+        return stateStrs;
+        
+    }
+    
     public ArrayList<String> getBEEventNames(){
         return ParseModel.allEvents(getTransitionStrings());
     }

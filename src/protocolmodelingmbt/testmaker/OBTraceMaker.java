@@ -20,10 +20,10 @@ public class OBTraceMaker {
 
         for (int i = 0; i < object.getTransitions().size(); i++) {
             String transition = object.getTransitions().get(i).getTransitionStr();
-            
+
             String path = "";
 
-            //           System.out.println(" be " + behaviour.getTransitions().get(i).getBeforeState().getState());
+                      System.out.println(" be " + object.getTransitions().get(i).getBeforeState().getState());
             if (/*object.getTransitions().get(i).getBeforeState().getState().contains("@new")*/stateContainsOnly(object.getTransitions().get(i).getBeforeState().getState(), "@new")) {
                 TransitionNode root = new TransitionNode(object.getTransitions().get(i).getBeforeState().getState(), transition, object.getTransitionStrings());
                 traverse(root, object, path);
@@ -171,20 +171,50 @@ public class OBTraceMaker {
                         }
 
                         //System.out.println("o1E size = " + o1Eset.size() + " o2E size = " + o2Eset.size());
+                        boolean addtransition = false;
                         if (!o1Eset.isEmpty() && !o2Eset.isEmpty()) {
-                            for (String ev : ParsingUtilities.getDuplicateArrayListElements(o1Eset, o2Eset)) {
-                                if (o1o2EIntersection.contains(ev)) {
+
+
+                            for (String ev : ParsingUtilities.getUnionOfArrayListElements(o1Eset, o2Eset)) {
+                                Transition tr1 = new Transition(new State(o1.getStates().get(i).getState()),
+                                        new Event(ev), new State(o1.getStates().get(k).getState()));
+
+                                Transition tr2 = new Transition(new State(o2.getStates().get(j).getState()),
+                                        new Event(ev), new State(o2.getStates().get(h).getState()));
+
+
+                                if (o1.getTransitions().contains(tr1) && o2.getTransitions().contains(tr2)) {//i.e. both transitions have the same event
+                                    addtransition = true;
                                     Transition tr = new Transition(new State(o1.getStates().get(i).getState() + "&"
                                             + o2.getStates().get(j).getState()),
                                             new Event(ev),
                                             new State(o1.getStates().get(k).getState() + "&" + o2.getStates().get(h).getState()));
                                     System.out.println("case 1 " + tr.getTransitionStr());
                                     ocomp.getTransitions().add(tr);
+
+                                } else {
+                                    if ((o2.getStates().get(j) != o2.getStates().get(h)) && (o1.getStates().get(i) == o1.getStates().get(k))
+                                            || (o1.getStates().get(i) != o1.getStates().get(k)) && (o2.getStates().get(j) == o2.getStates().get(h))) {
+                                        addtransition = true;
+
+                                        Transition tr = new Transition(new State(o1.getStates().get(i).getState() + "&"
+                                                + o2.getStates().get(j).getState()),
+                                                new Event(ev),
+                                                new State(o1.getStates().get(k).getState() + "&" + o2.getStates().get(h).getState()));
+                                        System.out.println("case 1+ " + tr.getTransitionStr());
+                                        ocomp.getTransitions().add(tr);
+
+                                    } else {
+                                        //
+                                    }
                                 }
                             }
+
                         } else if (!o1Eset.isEmpty() && (o2.getStates().get(j) == o2.getStates().get(h) && o2Eset.isEmpty())) {
                             for (String ev : o1Eset) {
                                 if (!o1o2EIntersection.contains(ev)) {
+                                    addtransition = true;
+
                                     Transition tr = new Transition(new State(o1.getStates().get(i).getState() + "&"
                                             + o2.getStates().get(j).getState()),
                                             new Event(ev),
@@ -196,6 +226,8 @@ public class OBTraceMaker {
                         } else if (!o2Eset.isEmpty() && (o1.getStates().get(i) == o1.getStates().get(k)) && o1Eset.isEmpty()) {
                             for (String ev : o2Eset) {
                                 if (!o1o2EIntersection.contains(ev)) {
+                                    addtransition = true;
+
                                     Transition tr = new Transition(new State(o1.getStates().get(i).getState() + "&"
                                             + o2.getStates().get(j).getState()),
                                             new Event(ev),
@@ -205,6 +237,16 @@ public class OBTraceMaker {
                                 }
                             }
                         }//<====
+                        if (addtransition) {
+                            State begst = new State(o1.getStates().get(i).getState() + "&" + o2.getStates().get(j).getState());
+                            if (!ocomp.getstateNames().contains(begst.getState())) {
+                                ocomp.getStates().add(begst);
+                            }
+                            State endst = new State(o1.getStates().get(k).getState() + "&" + o2.getStates().get(h).getState());
+                            if (!ocomp.getstateNames().contains(endst.getState())) {
+                                ocomp.getStates().add(endst);
+                            }
+                        }
                     }//for h
                 }//for k
             }//for j
@@ -213,96 +255,6 @@ public class OBTraceMaker {
 
     }
 
-    //   public static void weaveTracesFromObjects(Model model) {
-//        ArrayList<Behaviour> protocolMachines = new ArrayList<>();
-//        protocolMachines.addAll(model.objects);
-//        protocolMachines.addAll(model.behaviours);
-    //Put each object&behaviour into initial state & make a list of model event names
-//        for (Behaviour pm : protocolMachines) {
-//            pm.setCurrentState("@new");
-//            System.out.println(pm.getModelElementName() + "  state=" + pm.getCurrentState());
-//            model.getEventNames().addAll(ParsingUtilities.getUniqueArrayListElements(model.getEventNames(), pm.getBEEventNames()));
-//        }
-//
-//        makeTraceForAllowedEvents(model, protocolMachines, model.getEventNames());
-//    }
-//    private static void weaveTracesWith(Model model, Behaviour objectORbehaviour) {
-//        String[] otransitions = null;
-//        String[] mtransitions = null;
-//        String A = null;
-//        String B = null;
-//        boolean sequenceCut;
-//        int counter = 0;
-//        for (String mtrace : model.traces) {//For each model trace
-//            int modelTraceIndex = model.traces.indexOf(mtrace);
-//            mtransitions = splitTrace(mtrace);
-////            for (int k = 0; k < mtransitions.length; k++) {
-////                System.out.println(mtransitions[k]);
-////            }
-//            for (String otrace : objectORbehaviour.getTraces()) {//for each object trace
-//                otransitions = splitTrace(otrace);
-////                for (int k = 0; k < otransitions.length; k++) {
-////                    System.out.println(otransitions[k]);
-////                }
-//
-//                int mt = 0;
-//                int ot = 0;
-//                System.out.println("==== weaving #" + ++counter);
-//                System.out.println("TS: " + mtrace);
-//                System.out.println("Ti: " + otrace);
-//                do { //do weawing
-//                    sequenceCut = false;
-//                    A = ParseModel.getEvent(mtransitions[mt]);
-//                    B = ParseModel.getEvent(otransitions[ot]);
-////                    System.out.println("System event: " + A + " Object event: " + B);
-//                    if (A.equals(B)) { //A = B
-//                        mtransitions[mt] = doBeforeStateConcat(mtransitions[mt], ParseModel.beforeState(otransitions[ot]));
-//                        mtransitions[mt] = doAfterStateConcat(mtransitions[mt], ParseModel.afterState(otransitions[ot]));
-//                        //                       System.out.println("woven transition: " + mtransitions[mt]);
-//                        //                       System.out.println("case System event = Object event");
-//                        mt++;
-//                        ot++;
-//                    } else {//A != B
-//                        //                       System.out.println("case System event != Object event");
-//                        if (!ParsingUtilities.getDuplicateArrayListElements(model.getEventNames(), objectORbehaviour.getBEEventNames()).contains(A)) {//A is NOT there
-//                            //                           System.out.println(A + " is NOT in Es AND Ei");
-//                            //                           if (ParsingUtilities.getDuplicateArrayListElements(model.getEventNames(), objectORbehaviour.getBEEventNames()).contains(B)) { //B is there
-//                            //                           System.out.println(B + " IS in Es AND Ei");
-//                            mtransitions[mt] = doBeforeStateConcat(mtransitions[mt], ParseModel.beforeState(otransitions[ot]));
-//                            mtransitions[mt] = doAfterStateConcat(mtransitions[mt], ParseModel.beforeState(otransitions[ot]));
-//                            mt++;
-//                            //                           }
-//                        } else {//A IS there
-////                            System.out.println(A + " IS  in Es AND Ei");
-//                            if (ParsingUtilities.getDuplicateArrayListElements(model.getEventNames(), objectORbehaviour.getBEEventNames()).contains(B)) { //B is there
-//                                System.out.println("SequenceCut here"); //deadlock  
-//                                sequenceCut = true;
-//                                break;
-//                            } else {//B is NOT there
-//                                //                               System.out.println(B + " IS NOT in Es AND Ei");
-//                                mtransitions[mt] = doTrReplaceAndAdd(mtransitions[mt], otransitions[ot]);
-////                                System.out.println("woven transition: " + mtransitions[mt]);
-//                                ot++;
-//                            }
-//                        }
-//                    }
-//                } while ((mt < mtransitions.length) && (ot < otransitions.length));
-//                mtrace = glueTrace(mtransitions, 0);
-//
-////                System.out.println("glued: " + mtrace);
-//                if ((!sequenceCut) && (ot < otransitions.length) && !ParsingUtilities.getDuplicateArrayListElements(model.getEventNames(), objectORbehaviour.getBEEventNames()).contains(B)) {
-//                    //TConactenate mtrasitions with the rest of otranstions;
-//                    //            otrace = glueTrace(otransitions,0);
-//                    mtrace = mtrace.replaceAll("\\|", "") /*it's not the termination yet*/ + glueTrace(otransitions, ot);
-////                    System.out.println("with tail: " + mtrace);
-//                }
-//                System.out.println("glued at #" + counter + ": " + mtrace);
-//                model.traces.set(modelTraceIndex, mtrace);
-//
-//            }
-//        }
-//
-//    }
     private static String[] splitTrace(String trace) {
         if (trace.contains("-->")) {
             trace = trace.replace("-->", ">");
@@ -336,7 +288,7 @@ public class OBTraceMaker {
         if (root.getChildren().isEmpty()) {
             path += "|";
             behaviour.getTraces().add(path);
-    //               System.out.println("path " + path);
+            //               System.out.println("path " + path);
         }
     }
 
@@ -356,30 +308,29 @@ public class OBTraceMaker {
         }
     }
 
-    private static String doTrReplaceAndAdd(String mtransition, String otransition) {
-        String newmtransition = "";
-        String insmttransition = "";
-        //       System.out.print(mtransition);
-        //       System.out.println(" and "+otransition);
-        //before state change
-        newmtransition = doBeforeStateConcat(mtransition, ParseModel.beforeState(otransition));
-        //change event
-        newmtransition = ParseModel.beforeState(newmtransition) + "*" + ParseModel.getEvent(otransition) + "=" + ParseModel.beforeState(mtransition);
-        //afterstate change
-        newmtransition = doAfterStateConcat(newmtransition, ParseModel.afterState(otransition));
-
-        //insert transaction
-        //SR this is bad but for the time being... TODO: Separate funntion for inserting transition?
-        //beforestate change in the initial one
-        insmttransition = doBeforeStateConcat(mtransition, ParseModel.beforeState(otransition));// + "*"
-        //afterstate change in the initial one
-        insmttransition = doAfterStateConcat(insmttransition, ParseModel.beforeState(otransition));
-        //concat the both
-        newmtransition = newmtransition + "-->" + insmttransition;
-        //      System.out.println("become "+newmtransition);
-        return newmtransition;
-    }
-
+//    private static String doTrReplaceAndAdd(String mtransition, String otransition) {
+//        String newmtransition = "";
+//        String insmttransition = "";
+//        //       System.out.print(mtransition);
+//        //       System.out.println(" and "+otransition);
+//        //before state change
+//        newmtransition = doBeforeStateConcat(mtransition, ParseModel.beforeState(otransition));
+//        //change event
+//        newmtransition = ParseModel.beforeState(newmtransition) + "*" + ParseModel.getEvent(otransition) + "=" + ParseModel.beforeState(mtransition);
+//        //afterstate change
+//        newmtransition = doAfterStateConcat(newmtransition, ParseModel.afterState(otransition));
+//
+//        //insert transaction
+//        //SR this is bad but for the time being... TODO: Separate funntion for inserting transition?
+//        //beforestate change in the initial one
+//        insmttransition = doBeforeStateConcat(mtransition, ParseModel.beforeState(otransition));// + "*"
+//        //afterstate change in the initial one
+//        insmttransition = doAfterStateConcat(insmttransition, ParseModel.beforeState(otransition));
+//        //concat the both
+//        newmtransition = newmtransition + "-->" + insmttransition;
+//        //      System.out.println("become "+newmtransition);
+//        return newmtransition;
+//    }
     private static ArrayList<State> CartesianProductOfStates(Behaviour be1, Behaviour be2) {
         ArrayList<State> stcartproduct = new ArrayList<>();
         int i = 0;
