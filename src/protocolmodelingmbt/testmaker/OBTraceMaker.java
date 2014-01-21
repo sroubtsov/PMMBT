@@ -23,7 +23,7 @@ public class OBTraceMaker {
 
             String path = "";
 
-                      System.out.println(" be " + object.getTransitions().get(i).getBeforeState().getState());
+    //                  System.out.println(" be " + object.getTransitions().get(i).getBeforeState().getState());
             if (/*object.getTransitions().get(i).getBeforeState().getState().contains("@new")*/stateContainsOnly(object.getTransitions().get(i).getBeforeState().getState(), "@new")) {
                 TransitionNode root = new TransitionNode(object.getTransitions().get(i).getBeforeState().getState(), transition, object.getTransitionStrings());
                 traverse(root, object, path);
@@ -183,7 +183,7 @@ public class OBTraceMaker {
                                         new Event(ev), new State(o2.getStates().get(h).getState()));
 
 
-                                if (o1.getTransitions().contains(tr1) && o2.getTransitions().contains(tr2)) {//i.e. both transitions have the same event
+                                if (o1.getTransitionStrings().contains(tr1.getTransitionStr()) && o2.getTransitionStrings().contains(tr2.getTransitionStr())) {//i.e. both transitions have the same event
                                     addtransition = true;
                                     Transition tr = new Transition(new State(o1.getStates().get(i).getState() + "&"
                                             + o2.getStates().get(j).getState()),
