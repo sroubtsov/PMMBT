@@ -37,7 +37,7 @@ public class OBTraceMaker {
         boolean only = true;
         String[] states = state.split("&");
         for (int i = 0; i < states.length; i++) {
-            if (!states[i].contains(subst)) {
+            if (!states[i].contains(subst)&& !states[i].startsWith("!")) {//SR To take into accout that bahaviours don't have @new TODO: Make it more generic, otherwise the function can't be used apart from subst= @new 
                 only = false;
                 return only;
             }
@@ -193,8 +193,10 @@ public class OBTraceMaker {
                                     ocomp.getTransitions().add(tr);
 
                                 } else {
-                                    if ((o2.getStates().get(j) != o2.getStates().get(h)) && (o1.getStates().get(i) == o1.getStates().get(k))
-                                            || (o1.getStates().get(i) != o1.getStates().get(k)) && (o2.getStates().get(j) == o2.getStates().get(h))) {
+                                    
+                                    if ((o2.getTransitionStrings().contains(tr2.getTransitionStr()) && o2.getStates().get(j) != o2.getStates().get(h)) && (o1.getStates().get(i) == o1.getStates().get(k))
+                                            || 
+                                         o1.getTransitionStrings().contains(tr1.getTransitionStr()) && (o1.getStates().get(i) != o1.getStates().get(k)) && (o2.getStates().get(j) == o2.getStates().get(h))) {
                                         addtransition = true;
 
                                         Transition tr = new Transition(new State(o1.getStates().get(i).getState() + "&"
