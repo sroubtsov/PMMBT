@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import protocolmodelingmbt.parser.Grammar;
 import protocolmodelingmbt.parser.ParseModel;
+import protocolmodelingmbt.testmaker.OBTraceMaker;
 
 public class Behaviour extends ModelElement {
 
@@ -49,59 +50,56 @@ public class Behaviour extends ModelElement {
 
     public ArrayList<String> getTransitionStrings() {
         ArrayList<String> transitionStrs = new ArrayList<>();
-        for(Transition tr: this.transitions){
+        for (Transition tr : this.transitions) {
             transitionStrs.add(tr.getTransitionStr());
         }
         return transitionStrs;
     }
-    
-    public ArrayList<String> getstateNames(){
+
+    public ArrayList<String> getstateNames() {
         ArrayList<String> stateStrs = new ArrayList<>();
-        for(State st: this.states){
+        for (State st : this.states) {
             stateStrs.add(st.getState());
         }
         return stateStrs;
-        
+
     }
-    
-    public ArrayList<String> getBEEventNames(){
+
+    public ArrayList<String> getBEEventNames() {
         return ParseModel.allEvents(getTransitionStrings());
     }
-    
-    
-    public String getbeforeStateForEventName(String eventname){
+
+    public String getbeforeStateForEventName(String eventname) {
         String beforestate = "";
-        for(Transition tr: this.transitions){
-            if(tr.getAction().getAction().equals(eventname)){
+        for (Transition tr : this.transitions) {
+            if (tr.getAction().getAction().equals(eventname)) {
                 beforestate = tr.getBeforeState().getState();
                 break;
             }
         }
         return beforestate;
     }
-    
-    public String getafterStateForEventName(String eventname){
+
+    public String getafterStateForEventName(String eventname) {
         String afterstate = "";
-        for(Transition tr: this.transitions){
-            if(tr.getAction().getAction().equals(eventname)){
+        for (Transition tr : this.transitions) {
+            if (tr.getAction().getAction().equals(eventname)) {
                 afterstate = tr.getAfterState().getState();
                 break;
             }
         }
         return afterstate;
     }
-    
-    
-    public void setAfterStateAsCurrentForEventName(String eventname){        
-        for(Transition tr: this.transitions){
-            if(tr.getAction().getAction().equals(eventname)){
+
+    public void setAfterStateAsCurrentForEventName(String eventname) {
+        for (Transition tr : this.transitions) {
+            if (tr.getAction().getAction().equals(eventname)) {
                 this.currentState.setState(tr.getAfterState().getState());
                 break;
             }
         }
     }
-    
-    
+
     public void writeBehaviour(BufferedWriter out) throws IOException {
         out.write(Grammar.ATTRIBUTES + "\n");
         for (int i = 0; i < this.attributes.size(); i++) {
@@ -133,12 +131,32 @@ public class Behaviour extends ModelElement {
             this.transitions.get(i).writeTransition();
         }
     }
-    
-    public void writeTraces(){
+
+    public void writeTraces(int mode) {
         System.out.println("Traces for " + this.getModelElementName());
-        for (int i = 0; i < this.traces.size(); i++) {
-            System.out.println(this.traces.get(i));
+        switch (mode) {
+            case 0:
+                for (int i = 0; i < this.traces.size(); i++) {
+                    System.out.println(traces.get(i));
+                }
+
+                break;
+            case 1:
+            case 2:
+                for (int i = 0; i < this.traces.size(); i++) {
+                    String[] tracesstr = OBTraceMaker.splitTrace(this.traces.get(i));
+
+                    for (int j = 0; j < tracesstr.length - 1; j++) {
+                        if (mode == 2) {
+                            System.out.print(OBTraceMaker.hideStatesInTransition(tracesstr[j]) + "-->");
+                        } else {
+                            System.out.println(tracesstr[j] + "-->");
+                        }
+                    }
+                    System.out.println(tracesstr[tracesstr.length - 1]);
+                }
+                break;
         }
-        
-    } 
+
+    }
 }

@@ -41,7 +41,7 @@ public class ProtocolModelingMBT {
 //              System.out.println(ev);
 //            };
             ob.writeBehaviour();
-            ob.writeTraces();
+            ob.writeTraces(0);
         }
 
         for (Behaviour be : model.behaviours) {
@@ -51,7 +51,7 @@ public class ProtocolModelingMBT {
 //              System.out.println(ev);
 //            };
 //            
-            be.writeTraces();
+            be.writeTraces(0);
         }
         //OBTraceMaker.makeModeltraces(model);
         // NEW algorithm 
@@ -74,7 +74,7 @@ public class ProtocolModelingMBT {
             System.out.println(st.getState());
         }
         OBTraceMaker.makeOBtraces(ocomp);
-        ocomp.writeTraces();
+        ocomp.writeTraces(2);
 //        for(String trace: model.traces){
 //            System.out.println(trace);
 //        }
