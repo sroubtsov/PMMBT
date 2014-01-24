@@ -151,9 +151,9 @@ public class OBTraceMaker {
         ocomp.setModelElementName(o1.getModelElementName() + "&" + o2.getModelElementName());
         System.out.println("=== start ===");
         ArrayList<String> o1o2EIntersection = ParsingUtilities.getDuplicateArrayListElements(o1.getBEEventNames(), o2.getBEEventNames());
-        for (int i = 0; i < o1o2EIntersection.size(); i++) {
-            System.out.println(" intersection " + i + " " + o1o2EIntersection.get(i));
-        }
+//        for (int i = 0; i < o1o2EIntersection.size(); i++) {
+//            System.out.println(" intersection " + i + " " + o1o2EIntersection.get(i));
+//        }
         for (int i = 0; i < o1.getStates().size(); i++) {
             for (int j = 0; j < o2.getStates().size(); j++) {
                 for (int k = 0; k < o1.getStates().size(); k++) {
@@ -171,7 +171,7 @@ public class OBTraceMaker {
                             //                         System.out.println(o2.getStates().get(j).getState() + "*" + ev + "=" + o2.getStates().get(h).getState() + " i =" + i + " j =" + j + " k =" + k + " h =" + h);
                         }
 
-                        //System.out.println("o1E size = " + o1Eset.size() + " o2E size = " + o2Eset.size());
+ //                       System.out.println("o1E size = " + o1Eset.size() + " o2E size = " + o2Eset.size());
                         boolean addtransition = false;
                         if (!o1Eset.isEmpty() && !o2Eset.isEmpty()) {
 
@@ -179,11 +179,11 @@ public class OBTraceMaker {
                             for (String ev : ParsingUtilities.getUnionOfArrayListElements(o1Eset, o2Eset)) {
                                 Transition tr1 = new Transition(new State(o1.getStates().get(i).getState()),
                                         new Event(ev), new State(o1.getStates().get(k).getState()));
-
+//System.out.println("tr1 " + tr1.getTransitionStr());
                                 Transition tr2 = new Transition(new State(o2.getStates().get(j).getState()),
                                         new Event(ev), new State(o2.getStates().get(h).getState()));
 
-
+//System.out.println("tr2 " + tr2.getTransitionStr());
                                 if (o1.getTransitionStrings().contains(tr1.getTransitionStr()) && o2.getTransitionStrings().contains(tr2.getTransitionStr())) {//i.e. both transitions have the same event
                                     addtransition = true;
                                     Transition tr = new Transition(new State(o1.getStates().get(i).getState() + "&"
@@ -317,29 +317,6 @@ public class OBTraceMaker {
         }
     }
 
-//    private static String doTrReplaceAndAdd(String mtransition, String otransition) {
-//        String newmtransition = "";
-//        String insmttransition = "";
-//        //       System.out.print(mtransition);
-//        //       System.out.println(" and "+otransition);
-//        //before state change
-//        newmtransition = doBeforeStateConcat(mtransition, ParseModel.beforeState(otransition));
-//        //change event
-//        newmtransition = ParseModel.beforeState(newmtransition) + "*" + ParseModel.getEvent(otransition) + "=" + ParseModel.beforeState(mtransition);
-//        //afterstate change
-//        newmtransition = doAfterStateConcat(newmtransition, ParseModel.afterState(otransition));
-//
-//        //insert transaction
-//        //SR this is bad but for the time being... TODO: Separate funntion for inserting transition?
-//        //beforestate change in the initial one
-//        insmttransition = doBeforeStateConcat(mtransition, ParseModel.beforeState(otransition));// + "*"
-//        //afterstate change in the initial one
-//        insmttransition = doAfterStateConcat(insmttransition, ParseModel.beforeState(otransition));
-//        //concat the both
-//        newmtransition = newmtransition + "-->" + insmttransition;
-//        //      System.out.println("become "+newmtransition);
-//        return newmtransition;
-//    }
     private static ArrayList<State> CartesianProductOfStates(Behaviour be1, Behaviour be2) {
         ArrayList<State> stcartproduct = new ArrayList<>();
         int i = 0;
@@ -364,8 +341,10 @@ public class OBTraceMaker {
         ArrayList<String> events = new ArrayList<>();
 
         for (Transition tr : o.getTransitions()) {
+ //            System.out.println("beg " + beginst.getState() + " end " + endst.getState() + " tr " + tr.getTransitionStr());
+
             if (tr.getBeforeState().getState().equals(beginst.getState()) && tr.getAfterState().getState().equals(endst.getState())) {
-                //                        System.out.println("beg " + beginst.getState() + " end " + endst.getState() + " tr " + tr.getTransitionStr());
+//                                        System.out.println("beg " + beginst.getState() + " end " + endst.getState() + " tr " + tr.getTransitionStr());
 
                 events.add(tr.getAction().getAction());
             }

@@ -50,7 +50,7 @@ public class ProtocolModelingMBT {
 //            for (String ev: be.getBEEventNames()){
 //              System.out.println(ev);
 //            };
-//            
+            be.writeBehaviour();
             be.writeTraces(0);
         }
         //OBTraceMaker.makeModeltraces(model);
@@ -67,14 +67,14 @@ public class ProtocolModelingMBT {
 
         };
 
-        for (Transition tr : ocomp.getTransitions()) {
-            System.out.println(tr.getTransitionStr());
-        }
-        for (State  st: ocomp.getStates()){
-            System.out.println(st.getState());
-        }
+//        for (Transition tr : ocomp.getTransitions()) {
+//            System.out.println(tr.getTransitionStr());
+//        }
+//        for (State  st: ocomp.getStates()){
+//            System.out.println(st.getState());
+//        }
         OBTraceMaker.makeOBtraces(ocomp);
-        ocomp.writeTraces(2);
+        ocomp.writeTraces(1);
 //        for(String trace: model.traces){
 //            System.out.println(trace);
 //        }
