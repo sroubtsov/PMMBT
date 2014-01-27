@@ -1,0 +1,74 @@
+
+#	Metamaxim ModelScope
+#	Copyright 2003 Metamaxim Ltd
+
+MODEL Bank2
+
+# OBJECT definitions
+
+OBJECT Customer
+	NAME Full Name
+	ATTRIBUTES Full Name: String, Address: String, !Total Balance: Currency
+	STATES registered
+	TRANSITIONS @new*Register=registered,
+		registered*Open=registered,
+		registered*Change Address=registered
+
+OBJECT Account
+	NAME Account Number
+#	INCLUDES 
+	Freezing, 
+	Close Control
+	ATTRIBUTES Account Number: String, Owner : Customer, Balance : Currency
+	STATES active, closed
+	TRANSITIONS @new*Open=active,
+		active*Close=closed, 
+		active*!Cash Deposit=active,
+		active*!Cash Withdraw=active
+		
+#BEHAVIOUR !Freezing
+#	STATES not frozen, frozen
+#	TRANSITIONS @new*Open=not frozen, 
+#		not frozen*Freeze=frozen,
+#		frozen*Release=not frozen, 
+#		not frozen*Cash Withdraw=not frozen
+	
+BEHAVIOUR !Close Control
+	STATES in credit, overdrawn
+	TRANSITIONS in credit*Close=@any
+	
+# EVENT definitions
+
+EVENT Register
+	ATTRIBUTES Customer: Customer, Full Name: String, Address: String
+
+EVENT Open
+	ATTRIBUTES Account: Account, Owner: Customer, Account Number: String
+
+EVENT Change Address
+	ATTRIBUTES Customer: Customer, Address: String
+
+EVENT Cash Deposit
+	ATTRIBUTES Account: Account, Amount: Currency
+
+EVENT Cash Withdraw
+	ATTRIBUTES Account: Account, Amount: Currency
+
+EVENT Close
+	ATTRIBUTES Account: Account
+	
+EVENT Freeze 
+	ATTRIBUTES Subject: Freezing 
+
+EVENT Release 
+	ATTRIBUTES Subject: Freezing
+
+# ACTOR definitions
+
+#ACTOR Customer Service
+#	BEHAVIOURS Customer, Account
+#	EVENTS Register, Change Address, Open, Close, Freeze, Release
+
+#ACTOR Teller
+#	BEHAVIOURS Account
+#	EVENTS Cash Deposit, Cash Withdraw

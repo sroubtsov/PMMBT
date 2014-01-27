@@ -23,7 +23,7 @@ public class OBTraceMaker {
 
             String path = "";
 
-    //                  System.out.println(" be " + object.getTransitions().get(i).getBeforeState().getState());
+//                      System.out.println(" be " + object.getTransitions().get(i).getBeforeState().getState());
             if (/*object.getTransitions().get(i).getBeforeState().getState().contains("@new")*/stateContainsOnly(object.getTransitions().get(i).getBeforeState().getState(), "@new")) {
                 TransitionNode root = new TransitionNode(object.getTransitions().get(i).getBeforeState().getState(), transition, object.getTransitionStrings());
                 traverse(root, object, path);
@@ -61,73 +61,6 @@ public class OBTraceMaker {
 
     }
 
-//    public static void makeModeltraces(Model model) {
-//        ArrayList<Behaviour> protocolMachines = new ArrayList<>();
-//        protocolMachines.addAll(model.objects);
-//        protocolMachines.addAll(model.behaviours);
-//        for (int i = 0; i < protocolMachines.size(); i++) {
-//            if (ParsingUtilities.ifDisjointArrayLists(model.getEventNames(), protocolMachines.get(i).getBEEventNames())) {
-//                System.out.println("Disjoint algorithm for " + protocolMachines.get(i).getModelElementName());
-//                model.traces.addAll(protocolMachines.get(i).getTraces());
-//            } else {
-//                System.out.println("Woven algorithm");
-//                weaveTracesWith(model, protocolMachines.get(i));
-//                //               model.traces.addAll(protocolMachines.get(i).getTraces());
-//            }
-//            model.getEventNames().addAll(ParsingUtilities.getUniqueArrayListElements(model.getEventNames(), protocolMachines.get(i).getBEEventNames()));
-//        }
-//    }
-//    private static void makeTraceForAllowedEvents(Model model, ArrayList<Behaviour> protocolMachines, ArrayList<String> allowedEventNames) {
-//        ArrayList<String> nextAllowedEventNames = new ArrayList<>();
-//        ArrayList<String> firedEventNames = new ArrayList<>();
-//        nextAllowedEventNames.addAll(allowedEventNames);
-//        for (String ev : allowedEventNames) {
-//            boolean allowed = true;
-//            ArrayList<Behaviour> involvedPMs = new ArrayList<>();
-//            for (Behaviour o : protocolMachines) {
-//                if (o.getBEEventNames().contains(ev)) {
-//                    //            System.out.println(o.getModelElementName() + "  state=" + o.getCurrentState() + " event = " + ev);
-//                    if (!o.getbeforeStateForEventName(ev).equals(o.getCurrentState())) {
-//                        allowed = false;//event is NOT allowed
-//                        //                  System.out.println(allowed);
-//                        break; //into event firing
-//                    } else {
-//                    }
-//                    involvedPMs.add(o);
-//                } else {
-//                    //nothing?
-//                }
-//                if (allowed) {
-//                    firedEventNames.add(ev);
-//                    nextAllowedEventNames.remove(ev);
-//                }
-//            }
-//            if (allowed) {
-//
-//                //Put the corresponding objects into corresponding states
-//                for (Behaviour o : involvedPMs) {
-//                    o.setAfterStateAsCurrentForEventName(ev);
-//                    //                System.out.println(o.getModelElementName() + "  state=" + o.getCurrentState());
-//                }
-//                //Place the transition into the trace
-//                for (String fev : firedEventNames) {
-//                    System.out.print(concatPMBeforeStatesForAllowedEvent(ev, involvedPMs) + "*" + fev + "=" + concatPMAfterStatesForAllowedEvent(ev, involvedPMs) + " --> ");
-//                }
-//                if (!nextAllowedEventNames.isEmpty()) {
-//                    makeTraceForAllowedEvents(model, protocolMachines, nextAllowedEventNames);
-//                } else {
-//                    System.out.println("|");
-//                }
-//
-//            }
-//            //Go further
-//
-//        }
-//
-//
-//
-//
-//    }
 
     private static String concatPMBeforeStatesForAllowedEvent(String ev, ArrayList<Behaviour> protocolMachines) {
         String beforeState = "";
@@ -343,9 +276,11 @@ public class OBTraceMaker {
         for (Transition tr : o.getTransitions()) {
  //            System.out.println("beg " + beginst.getState() + " end " + endst.getState() + " tr " + tr.getTransitionStr());
 
-            if (tr.getBeforeState().getState().equals(beginst.getState()) && tr.getAfterState().getState().equals(endst.getState())) {
+            if (tr.getBeforeState().getState().equals(beginst.getState()) && tr.getAfterState().getState().equals(endst.getState())
+                    || tr.getBeforeState().getState().equals(ParsingUtilities.parseMSname(Grammar.BEHAVIOURS, o.getModelElementName())+".@any")
+                    || tr.getAfterState().getState().equals(ParsingUtilities.parseMSname(Grammar.BEHAVIOURS, o.getModelElementName())+".@any")
+                    ) {
 //                                        System.out.println("beg " + beginst.getState() + " end " + endst.getState() + " tr " + tr.getTransitionStr());
-
                 events.add(tr.getAction().getAction());
             }
         }
