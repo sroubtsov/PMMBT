@@ -72,8 +72,9 @@ public class ProtocolModelingMBT {
 //        }
 //        for (State  st: ocomp.getStates()){
 //            System.out.println(st.getState());
-//        }
+ //       }
         OBTraceMaker.makeOBtraces(ocomp);
+ //       ocomp.writeBehaviour();
         ocomp.writeTraces(0);
 //        for(String trace: model.traces){
 //            System.out.println(trace);

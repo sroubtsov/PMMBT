@@ -215,11 +215,17 @@ public class OBTraceMaker {
 
             for (int i = 0; i < o1TransitionsForEvent.size(); i++) {
                 for (int j = 0; j < o2TransitionsForEvent.size(); j++) {
-                    Transition tr = new Transition(new State(o1TransitionsForEvent.get(i).getBeforeState().getState() + "&" + o2TransitionsForEvent.get(j).getBeforeState().getState()),
-                                                   new Event(ev),
-                                                   new State(o1TransitionsForEvent.get(i).getAfterState().getState() + "&" + o2TransitionsForEvent.get(j).getAfterState().getState()));
+                    State begst = new State(o1TransitionsForEvent.get(i).getBeforeState().getState() + "&" + o2TransitionsForEvent.get(j).getBeforeState().getState());
+                    State endst = new State(o1TransitionsForEvent.get(i).getAfterState().getState() + "&" + o2TransitionsForEvent.get(j).getAfterState().getState());
+
+                    Transition tr = new Transition(begst,
+                            new Event(ev),
+                            endst);
                     System.out.println("case 1 " + tr.getTransitionStr());
                     ocomp.getTransitions().add(tr);
+                    ocomp.getStates().add(begst);
+                    ocomp.getStates().add(endst);
+
                 }
             }
 
@@ -243,24 +249,34 @@ public class OBTraceMaker {
 
             for (int i = 0; i < o1TransitionsForEvent.size(); i++) {
                 for (int j = 0; j < o2.getStates().size(); j++) {
-                    Transition tr = new Transition(new State(o1TransitionsForEvent.get(i).getBeforeState().getState() + "&" + o2.getStates().get(j).getState()),
-                                                   new Event(ev),
-                                                   new State(o1TransitionsForEvent.get(i).getAfterState().getState() + "&" + o2.getStates().get(j).getState()));
+                    State begst = new State(o1TransitionsForEvent.get(i).getBeforeState().getState() + "&" + o2.getStates().get(j).getState());
+                    State endst = new State(o1TransitionsForEvent.get(i).getAfterState().getState() + "&" + o2.getStates().get(j).getState());
+                    Transition tr = new Transition(begst,
+                            new Event(ev),
+                            endst);
                     System.out.println("case 2.1 " + tr.getTransitionStr());
                     ocomp.getTransitions().add(tr);
+                    ocomp.getStates().add(begst);
+                    ocomp.getStates().add(endst);
+
                 }
             }
 
             for (int j = 0; j < o2TransitionsForEvent.size(); j++) {
                 for (int i = 0; i < o1.getStates().size(); i++) {
-                    Transition tr = new Transition(new State(o1.getStates().get(i).getState() + "&" + o2TransitionsForEvent.get(j).getBeforeState().getState()),
-                                                   new Event(ev),
-                                                   new State(o1.getStates().get(i).getState() + "&" + o2TransitionsForEvent.get(j).getAfterState().getState()));
+                    State begst = new State(o1.getStates().get(i).getState() + "&" + o2TransitionsForEvent.get(j).getBeforeState().getState());
+                    State endst = new State(o1.getStates().get(i).getState() + "&" + o2TransitionsForEvent.get(j).getAfterState().getState());
+                    Transition tr = new Transition(begst,
+                            new Event(ev),
+                            endst);
                     System.out.println("case 2.2 " + tr.getTransitionStr());
                     ocomp.getTransitions().add(tr);
+                    ocomp.getStates().add(begst);
+                    ocomp.getStates().add(endst);
+
                 }
             }
-            
+
         }
         return ocomp;
     }
