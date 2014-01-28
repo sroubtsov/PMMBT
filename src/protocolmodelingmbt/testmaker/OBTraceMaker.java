@@ -37,7 +37,7 @@ public class OBTraceMaker {
         boolean only = true;
         String[] states = state.split("&");
         for (int i = 0; i < states.length; i++) {
-            if (!states[i].contains(subst)&& !states[i].startsWith("!")) {//SR To take into accout that bahaviours don't have @new TODO: Make it more generic, otherwise the function can't be used apart from subst= @new 
+            if (!states[i].contains(subst) && !states[i].startsWith("!")) {//SR To take into accout that bahaviours don't have @new TODO: Make it more generic, otherwise the function can't be used apart from subst= @new 
                 only = false;
                 return only;
             }
@@ -45,7 +45,6 @@ public class OBTraceMaker {
         return only;
     }
 
-    
     public static void makeBEtraces(Behaviour behaviour) {
         String transition = "";
         for (int i = 0; i < behaviour.getTransitions().size(); i++) {
@@ -60,7 +59,6 @@ public class OBTraceMaker {
         }
 
     }
-
 
     private static String concatPMBeforeStatesForAllowedEvent(String ev, ArrayList<Behaviour> protocolMachines) {
         String beforeState = "";
@@ -104,7 +102,7 @@ public class OBTraceMaker {
                             //                         System.out.println(o2.getStates().get(j).getState() + "*" + ev + "=" + o2.getStates().get(h).getState() + " i =" + i + " j =" + j + " k =" + k + " h =" + h);
                         }
 
- //                       System.out.println("o1E size = " + o1Eset.size() + " o2E size = " + o2Eset.size());
+                        //                       System.out.println("o1E size = " + o1Eset.size() + " o2E size = " + o2Eset.size());
                         boolean addtransition = false;
                         if (!o1Eset.isEmpty() && !o2Eset.isEmpty()) {
 
@@ -127,10 +125,9 @@ public class OBTraceMaker {
                                     ocomp.getTransitions().add(tr);
 
                                 } else {
-                                    
+
                                     if ((o2.getTransitionStrings().contains(tr2.getTransitionStr()) && o2.getStates().get(j) != o2.getStates().get(h)) && (o1.getStates().get(i) == o1.getStates().get(k))
-                                            || 
-                                         o1.getTransitionStrings().contains(tr1.getTransitionStr()) && (o1.getStates().get(i) != o1.getStates().get(k)) && (o2.getStates().get(j) == o2.getStates().get(h))) {
+                                            || o1.getTransitionStrings().contains(tr1.getTransitionStr()) && (o1.getStates().get(i) != o1.getStates().get(k)) && (o2.getStates().get(j) == o2.getStates().get(h))) {
                                         addtransition = true;
 
                                         Transition tr = new Transition(new State(o1.getStates().get(i).getState() + "&"
@@ -191,6 +188,83 @@ public class OBTraceMaker {
 
     }
 
+    public static Behaviour buildCSPComposition_a2(Behaviour o1, Behaviour o2) {
+        Behaviour ocomp;
+        ocomp = new Behaviour(new ArrayList<Attribute>(), new ArrayList<State>(), new ArrayList<Transition>());
+        ocomp.setModelElementName(o1.getModelElementName() + "&" + o2.getModelElementName());
+        System.out.println("=== start ===");
+        ArrayList<String> o1o2EIntersection = ParsingUtilities.getDuplicateArrayListElements(o1.getBEEventNames(), o2.getBEEventNames());
+        ArrayList<String> o1o2EDiff = ParsingUtilities.getUniqueArrayListElements(o1.getBEEventNames(), o2.getBEEventNames());
+        o1o2EDiff.addAll(ParsingUtilities.getUniqueArrayListElements(o2.getBEEventNames(), o1.getBEEventNames()));
+        ArrayList<Transition> o1TransitionsForEvent = new ArrayList<>();
+        ArrayList<Transition> o2TransitionsForEvent = new ArrayList<>();
+
+        for (String ev : o1o2EIntersection) {
+            o1TransitionsForEvent.clear();
+            o2TransitionsForEvent.clear();
+            for (Transition tro1 : o1.getTransitions()) {
+                if (tro1.getAction().getAction().equals(ev)) {
+                    o1TransitionsForEvent.add(tro1);
+                }
+            }
+            for (Transition tro2 : o2.getTransitions()) {
+                if (tro2.getAction().getAction().equals(ev)) {
+                    o2TransitionsForEvent.add(tro2);
+                }
+            }
+
+            for (int i = 0; i < o1TransitionsForEvent.size(); i++) {
+                for (int j = 0; j < o2TransitionsForEvent.size(); j++) {
+                    Transition tr = new Transition(new State(o1TransitionsForEvent.get(i).getBeforeState().getState() + "&" + o2TransitionsForEvent.get(j).getBeforeState().getState()),
+                                                   new Event(ev),
+                                                   new State(o1TransitionsForEvent.get(i).getAfterState().getState() + "&" + o2TransitionsForEvent.get(j).getAfterState().getState()));
+                    System.out.println("case 1 " + tr.getTransitionStr());
+                    ocomp.getTransitions().add(tr);
+                }
+            }
+
+        }
+
+        for (String ev : o1o2EDiff) {
+            o1TransitionsForEvent.clear();
+            o2TransitionsForEvent.clear();
+
+            for (Transition tro1 : o1.getTransitions()) {
+                if (tro1.getAction().getAction().equals(ev)) {
+                    o1TransitionsForEvent.add(tro1);
+                }
+            }
+            for (Transition tro2 : o2.getTransitions()) {
+                if (tro2.getAction().getAction().equals(ev)) {
+                    o2TransitionsForEvent.add(tro2);
+                }
+            }
+
+
+            for (int i = 0; i < o1TransitionsForEvent.size(); i++) {
+                for (int j = 0; j < o2.getStates().size(); j++) {
+                    Transition tr = new Transition(new State(o1TransitionsForEvent.get(i).getBeforeState().getState() + "&" + o2.getStates().get(j).getState()),
+                                                   new Event(ev),
+                                                   new State(o1TransitionsForEvent.get(i).getAfterState().getState() + "&" + o2.getStates().get(j).getState()));
+                    System.out.println("case 2.1 " + tr.getTransitionStr());
+                    ocomp.getTransitions().add(tr);
+                }
+            }
+
+            for (int j = 0; j < o2TransitionsForEvent.size(); j++) {
+                for (int i = 0; i < o1.getStates().size(); i++) {
+                    Transition tr = new Transition(new State(o1.getStates().get(i).getState() + "&" + o2TransitionsForEvent.get(j).getBeforeState().getState()),
+                                                   new Event(ev),
+                                                   new State(o1.getStates().get(i).getState() + "&" + o2TransitionsForEvent.get(j).getAfterState().getState()));
+                    System.out.println("case 2.2 " + tr.getTransitionStr());
+                    ocomp.getTransitions().add(tr);
+                }
+            }
+            
+        }
+        return ocomp;
+    }
+
     public static String[] splitTrace(String trace) {
         if (trace.contains("-->")) {
             trace = trace.replace("-->", ">");
@@ -213,12 +287,12 @@ public class OBTraceMaker {
         return trace + "|";
     }
 
-    public static String hideStatesInTransition(String transition){
-        String trEvent ="";
-        trEvent = transition.substring(transition.indexOf("*")+1, transition.indexOf("="));
+    public static String hideStatesInTransition(String transition) {
+        String trEvent = "";
+        trEvent = transition.substring(transition.indexOf("*") + 1, transition.indexOf("="));
         return trEvent;
     }
-    
+
     private static void traverse(TransitionNode root, Behaviour behaviour, String path) {
 
         path += root.getTransitionValues(behaviour) + "-->";
@@ -274,12 +348,11 @@ public class OBTraceMaker {
         ArrayList<String> events = new ArrayList<>();
 
         for (Transition tr : o.getTransitions()) {
- //            System.out.println("beg " + beginst.getState() + " end " + endst.getState() + " tr " + tr.getTransitionStr());
+            //            System.out.println("beg " + beginst.getState() + " end " + endst.getState() + " tr " + tr.getTransitionStr());
 
             if (tr.getBeforeState().getState().equals(beginst.getState()) && tr.getAfterState().getState().equals(endst.getState())
-                    || tr.getBeforeState().getState().equals(ParsingUtilities.parseMSname(Grammar.BEHAVIOURS, o.getModelElementName())+".@any")
-                    || tr.getAfterState().getState().equals(ParsingUtilities.parseMSname(Grammar.BEHAVIOURS, o.getModelElementName())+".@any")
-                    ) {
+                    || tr.getBeforeState().getState().equals(ParsingUtilities.parseMSname(Grammar.BEHAVIOURS, o.getModelElementName()) + ".@any")
+                    || tr.getAfterState().getState().equals(ParsingUtilities.parseMSname(Grammar.BEHAVIOURS, o.getModelElementName()) + ".@any")) {
 //                                        System.out.println("beg " + beginst.getState() + " end " + endst.getState() + " tr " + tr.getTransitionStr());
                 events.add(tr.getAction().getAction());
             }

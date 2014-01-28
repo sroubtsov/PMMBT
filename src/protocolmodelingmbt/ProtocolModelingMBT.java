@@ -62,7 +62,7 @@ public class ProtocolModelingMBT {
 
         Behaviour ocomp = pms.get(0);
         for (int i = 1; i < pms.size(); i++) {
-            ocomp = OBTraceMaker.buildCSPComposition(ocomp, pms.get(i));
+            ocomp = OBTraceMaker.buildCSPComposition_a2(ocomp, pms.get(i));
             System.out.println("i=" + i);
 
         };
@@ -74,7 +74,7 @@ public class ProtocolModelingMBT {
 //            System.out.println(st.getState());
 //        }
         OBTraceMaker.makeOBtraces(ocomp);
-        ocomp.writeTraces(1);
+        ocomp.writeTraces(0);
 //        for(String trace: model.traces){
 //            System.out.println(trace);
 //        }
