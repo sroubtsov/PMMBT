@@ -222,7 +222,9 @@ public class OBTraceMaker {
                             new Event(ev),
                             endst);
                     System.out.println("case 1 " + tr.getTransitionStr());
-                    ocomp.getTransitions().add(tr);
+                    if (!ocomp.getTransitionStrings().contains(tr.getTransitionStr())) {
+                        ocomp.getTransitions().add(tr);
+                    }
                     ocomp.getStates().add(begst);
                     ocomp.getStates().add(endst);
 
@@ -251,11 +253,11 @@ public class OBTraceMaker {
                 for (int j = 0; j < o2.getStates().size(); j++) {
                     State begst = new State(o1TransitionsForEvent.get(i).getBeforeState().getState() + "&" + o2.getStates().get(j).getState());
                     State endst = new State(o1TransitionsForEvent.get(i).getAfterState().getState() + "&" + o2.getStates().get(j).getState());
-                    Transition tr = new Transition(begst,
-                            new Event(ev),
-                            endst);
+                    Transition tr = new Transition(begst, new Event(ev), endst);
                     System.out.println("case 2.1 " + tr.getTransitionStr());
-                    ocomp.getTransitions().add(tr);
+                    if (!ocomp.getTransitionStrings().contains(tr.getTransitionStr())) {
+                        ocomp.getTransitions().add(tr);
+                    }
                     ocomp.getStates().add(begst);
                     ocomp.getStates().add(endst);
 
@@ -266,11 +268,11 @@ public class OBTraceMaker {
                 for (int i = 0; i < o1.getStates().size(); i++) {
                     State begst = new State(o1.getStates().get(i).getState() + "&" + o2TransitionsForEvent.get(j).getBeforeState().getState());
                     State endst = new State(o1.getStates().get(i).getState() + "&" + o2TransitionsForEvent.get(j).getAfterState().getState());
-                    Transition tr = new Transition(begst,
-                            new Event(ev),
-                            endst);
+                    Transition tr = new Transition(begst, new Event(ev), endst);
                     System.out.println("case 2.2 " + tr.getTransitionStr());
-                    ocomp.getTransitions().add(tr);
+                    if (!ocomp.getTransitionStrings().contains(tr.getTransitionStr())) {
+                        ocomp.getTransitions().add(tr);
+                    }
                     ocomp.getStates().add(begst);
                     ocomp.getStates().add(endst);
 
@@ -309,9 +311,27 @@ public class OBTraceMaker {
         return trEvent;
     }
 
+    public static String hideUnchagingStatesInTrace(String trace) {
+        String[] transitions = splitTrace(trace);
+        String trnew = "";
+
+        for (int i = 0; i < transitions.length; i++) {
+            String[] states = transitions[i].split("\\*|=");
+            for (int j = 0; j < states.length; j++) {
+                String[] stateItems = states[j].split("&");
+                for (int k = 0; k < stateItems.length; k++) {
+                    System.out.println(stateItems[k]);
+                }
+            }
+
+        }
+        return trace;
+    }
+
     private static void traverse(TransitionNode root, Behaviour behaviour, String path) {
 
         path += root.getTransitionValues(behaviour) + "-->";
+
         for (TransitionNode child : root.getChildren()) {
             traverse(child, behaviour, path);
         }
@@ -320,7 +340,7 @@ public class OBTraceMaker {
         if (root.getChildren().isEmpty()) {
             path += "|";
             behaviour.getTraces().add(path);
-            //               System.out.println("path " + path);
+            //                       System.out.println("path " + path);
         }
     }
 

@@ -156,6 +156,13 @@ public class Behaviour extends ModelElement {
                     System.out.println(tracesstr[tracesstr.length - 1]);
                 }
                 break;
+            case 3:
+                for (int i = 0; i < this.traces.size(); i++) {
+                    OBTraceMaker.hideUnchagingStatesInTrace(traces.get(i));
+                    System.out.println(traces.get(i));
+                }
+
+                break;
         }
 
     }
