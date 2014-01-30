@@ -215,13 +215,28 @@ public class OBTraceMaker {
 
             for (int i = 0; i < o1TransitionsForEvent.size(); i++) {
                 for (int j = 0; j < o2TransitionsForEvent.size(); j++) {
-                    State begst = new State(o1TransitionsForEvent.get(i).getBeforeState().getState() + "&" + o2TransitionsForEvent.get(j).getBeforeState().getState());
-                    State endst = new State(o1TransitionsForEvent.get(i).getAfterState().getState() + "&" + o2TransitionsForEvent.get(j).getAfterState().getState());
+
+                    State begst;
+                    if (!o2TransitionsForEvent.get(j).getBeforeState().getState().contains("@any")) {
+                        begst = new State(o1TransitionsForEvent.get(i).getBeforeState().getState() + "&" + o2TransitionsForEvent.get(j).getBeforeState().getState());
+                    } else {
+                        begst = new State(o1TransitionsForEvent.get(i).getBeforeState().getState());
+                    }
+                    State endst;
+                    if (!o2TransitionsForEvent.get(j).getAfterState().getState().contains("@any")) {
+                        endst = new State(o1TransitionsForEvent.get(i).getAfterState().getState() + "&" + o2TransitionsForEvent.get(j).getAfterState().getState());
+                    } else {
+                        endst = new State(o1TransitionsForEvent.get(i).getAfterState().getState() + "&" + o2TransitionsForEvent.get(j).getBeforeState().getState());
+                    }
 
                     Transition tr = new Transition(begst,
                             new Event(ev),
                             endst);
                     System.out.println("case 1 " + tr.getTransitionStr());
+                    if (begst.getState().contains("@any")) {
+                        System.out.println("@any " + tr.getTransitionStr());
+                    }
+
                     if (!ocomp.getTransitionStrings().contains(tr.getTransitionStr())) {
                         ocomp.getTransitions().add(tr);
                     }
@@ -255,6 +270,10 @@ public class OBTraceMaker {
                     State endst = new State(o1TransitionsForEvent.get(i).getAfterState().getState() + "&" + o2.getStates().get(j).getState());
                     Transition tr = new Transition(begst, new Event(ev), endst);
                     System.out.println("case 2.1 " + tr.getTransitionStr());
+                    if (begst.getState().contains("@any")) {
+                        System.out.println("@any " + tr.getTransitionStr());
+                    }
+
                     if (!ocomp.getTransitionStrings().contains(tr.getTransitionStr())) {
                         ocomp.getTransitions().add(tr);
                     }
@@ -270,6 +289,10 @@ public class OBTraceMaker {
                     State endst = new State(o1.getStates().get(i).getState() + "&" + o2TransitionsForEvent.get(j).getAfterState().getState());
                     Transition tr = new Transition(begst, new Event(ev), endst);
                     System.out.println("case 2.2 " + tr.getTransitionStr());
+                    if (begst.getState().contains("@any")) {
+                        System.out.println("@any " + tr.getTransitionStr());
+                    }
+
                     if (!ocomp.getTransitionStrings().contains(tr.getTransitionStr())) {
                         ocomp.getTransitions().add(tr);
                     }
